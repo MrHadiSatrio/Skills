@@ -13,7 +13,7 @@ Objects are alive. They are autonomous organisms that own their behavior, intera
 - **Value types for domain primitives** — self-validating, self-describing, comparable. A `Timestamp` validates its range at construction; a `Uuid` refuses invalid strings.
 - **Null Object pattern over nullable types** — represent absence with a behavioral object (`Nobody`, `NoPlace`, `EmptyMoments`) rather than `null`.
 - **Read/write interface split** — an immutable interface for reading, extended by a mutable interface for mutation. Callers that only read never see mutation methods.
-- **Single-method interfaces** — contracts should be focused. One interface, one responsibility.
+- **Minimal interfaces** — contracts should be focused. One interface, one responsibility.
 - **No `I` prefix or `Impl` suffix** — `Place`, not `IPlace`; `FilesystemMoment`, not `MomentImpl`.
 
 ## 2. Naming
