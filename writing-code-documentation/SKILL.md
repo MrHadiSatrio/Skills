@@ -15,6 +15,8 @@ Documentation consists of up to four ordered segments.
 
 What service the code provides to callers. Max two lines. Written from the caller's perspective, answering "what do I get from this?"
 
+For **types** (classes, interfaces, objects), open with an identity phrase — a noun describing what the type *is*: `"An [Event] signalling..."`, `"A repository for..."`. For **callables** (functions, methods), open with a verb describing what the caller *gets*: `"Persists a..."`, `"Returns the..."`.
+
 ### Nuance Extension (optional)
 
 Additional context a caller needs: edge cases, threading guarantees, preconditions, error behavior, performance characteristics. Skip entirely if the brief says it all.
@@ -29,7 +31,7 @@ A short code example showing how to obtain the service described. Skip if usage 
 
 ## 2. What NOT to Do
 
-- Don't restate the name — "This class is a...", "This method does...", "A Foo that..."
+- Don't restate the declared name — "This class is a...", "This method does...", "A CompletionEvent that..."
 - Don't use filler phrases — "This is used to...", "A helper that...", "Responsible for..."
 - Don't document private/internal APIs unless their complexity warrants it
 - Don't write implementation details (how) — write caller-facing contracts (what)
@@ -37,7 +39,29 @@ A short code example showing how to obtain the service described. Skip if usage 
 - Don't write multi-paragraph `@param`/`@return` — one line each
 - Don't document getters/properties unless semantics are non-obvious
 
-## 3. Example
+## 3. Examples
+
+### Types
+
+Good:
+
+```kotlin
+/**
+ * An [Event] signalling the successful completion of an operation.
+ */
+class CompletionEvent : Event()
+```
+
+Bad:
+
+```kotlin
+/**
+ * Signals the successful completion of an operation.
+ */
+class CompletionEvent : Event()
+```
+
+### Callables
 
 Good:
 
