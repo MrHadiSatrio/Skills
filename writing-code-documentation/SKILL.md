@@ -25,9 +25,12 @@ Additional context a caller needs: edge cases, threading guarantees, preconditio
 
 A short code example showing how to obtain the service described. Skip if usage is trivial or inferrable from the constructor/method signatures.
 
-### Parameter & Return Tags (non-optional where the language supports them)
+### Annotation Tags (non-optional where the language supports them)
 
-`@param`, `@return` / `@returns` with a one-liner summary each. One line per tag — never multi-paragraph.
+- Apply any annotation relevant to the callable or type — `@param`, `@return`/`@returns`, `@throws`/`@exception`, `@deprecated`, `@see`, `@since`, and so on.
+- One line per tag — never multi-paragraph.
+- Only include tags that add caller-facing information not already clear from the signature.
+- Prefer annotations that document behaviour over metadata annotations: `@since` is rarely useful (callers shouldn't need to know when something was added) and `@author` is noise in a version-controlled codebase — skip both unless the project explicitly requires them.
 
 ## 2. What NOT to Do
 
@@ -36,7 +39,8 @@ A short code example showing how to obtain the service described. Skip if usage 
 - Don't document private/internal APIs unless their complexity warrants it
 - Don't write implementation details (how) — write caller-facing contracts (what)
 - Don't force optional segments — skip nuance if the brief is enough, skip usage if trivial
-- Don't write multi-paragraph `@param`/`@return` — one line each
+- Don't write multi-paragraph annotation tags — one line each
+- Don't use `@author` (redundant with version control) or `@since` (callers shouldn't need release history) unless the project explicitly mandates them
 - Don't document getters/properties unless semantics are non-obvious
 
 ## 3. Examples
@@ -93,13 +97,13 @@ fun save(moment: Moment): Moment
 
 ## 4. Language Format Reference
 
-| Language          | Format                  | Tags                         |
-|-------------------|-------------------------|------------------------------|
-| Kotlin            | KDoc (`/** */`)         | `@param`, `@return`          |
-| Java              | Javadoc (`/** */`)      | `@param`, `@return`          |
-| JavaScript / TS   | JSDoc (`/** */`)        | `@param`, `@returns`         |
-| Python            | Docstrings (`"""`)      | `:param`, `:return`          |
-| Rust              | `///`                   | Inline prose, no tags        |
-| Swift             | `///`                   | `- Parameter`, `- Returns`   |
-| Go                | `//` (preceding decl)   | Inline prose, no tags        |
+| Language        | Format             | Common annotation tags                                          |
+|-----------------|--------------------|-----------------------------------------------------------------|
+| Kotlin          | KDoc (`/** */`)    | `@param`, `@return`, `@throws`, `@see`, `@deprecated`           |
+| Java            | Javadoc (`/** */`) | `@param`, `@return`, `@throws`, `@see`, `@deprecated`           |
+| JavaScript / TS | JSDoc (`/** */`)   | `@param`, `@returns`, `@throws`, `@deprecated`, `@see`, `@type` |
+| Python          | Docstrings (`"""`) | `:param`, `:return`, `:raises`, `:deprecated`                   |
+| Rust            | `///`              | Inline prose sections: `# Errors`, `# Panics`, `# Examples`     |
+| Swift           | `///`              | `- Parameter`, `- Returns`, `- Throws`, `- Note`, `- Warning`   |
+| Go              | `//`               | Inline prose, `Deprecated:` prefix                              |
 
