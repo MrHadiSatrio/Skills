@@ -13,7 +13,7 @@ Objects are alive. They are autonomous organisms that own their behavior, intera
 - **Value types for domain primitives** — self-validating, self-describing, comparable. A `Timestamp` validates its range at construction; a `Uuid` refuses invalid strings.
 - **Null Object pattern over nullable types** — represent absence with a behavioral object (`Nobody`, `NoPlace`, `EmptyMoments`) rather than `null`.
 - **Read/write interface split** — an immutable interface for reading, extended by a mutable interface for mutation. Callers that only read never see mutation methods.
-- **Minimal interfaces** — contracts should be focused. One interface, one responsibility.
+- **Minimal interfaces** — contracts should be focused. One interface, one responsibility. *Interface width is a budget for the option space above it.* A small contract makes every wrapper, fake, null-object, filter, and composite cheap to write. A wide one makes them all expensive — silently pushing the writer toward inheritance, annotation-driven frameworks, or flag-driven configuration when composition stops being the path of least resistance.
 - **No `I` prefix or `Impl` suffix** — `Place`, not `IPlace`; `FilesystemMoment`, not `MomentImpl`.
 
 ## 2. Naming
@@ -35,7 +35,7 @@ DevEx is a first-class design concern. Reduce friction for callers.
 
 ## 4. Composition
 
-Composition is the primary means to extend and control behavior.
+Composition is the primary means to extend and control behavior. Its viability depends on §1's minimal-interface budget — when wrappers grow expensive, composition silently loses ground to inheritance and framework magic.
 
 - **Wrappers** implement the same interface as the wrapped `origin`. They may decorate (add behavior), proxy (control access), filter, cache, defer, merge, or adapt.
 - **Composite / fan-out** classes for multi-dispatch (e.g., `EventSinks` forwards events to every wrapped sink).
