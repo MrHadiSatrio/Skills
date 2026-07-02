@@ -41,9 +41,10 @@ The reference files are distilled from a specific commit of the upstream specifi
 Before relying on the reference content:
 
 1. Read the source commit hash from `reference/overview.md` (recorded in its header)
-2. Check the upstream repository for changes since that commit:
-   - Repository: https://github.com/open-telemetry/opentelemetry-specification
-   - Use `gh api repos/open-telemetry/opentelemetry-specification/compare/{source_commit}...HEAD` or WebFetch to compare against latest HEAD
+2. Check the upstream repository for changes since that commit — with a bounded query only. The compare API returns full commit lists and file diffs by default, which will flood your context:
+   - `gh api "repos/open-telemetry/opentelemetry-specification/compare/{source_commit}...HEAD" --jq '{ahead_by: .ahead_by, total_commits: .total_commits}'`
+   - Never fetch the compare result without that `--jq` filter (or an equivalent field selection via WebFetch)
+   - If the check cannot run at all (offline, `gh` unavailable, permission denied): state the pinned commit, proceed with the current reference files, and note the unverified-freshness caveat in any findings
 3. If changes exist:
    - Inform the user: the reference files were distilled against commit X, the upstream spec has moved forward (briefly: how many commits, rough summary of what changed)
    - Do NOT attempt to diff individual files or map changes to reference sections — this risks context bloat on large changesets
