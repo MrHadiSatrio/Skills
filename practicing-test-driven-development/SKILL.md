@@ -32,7 +32,7 @@ Classical / Detroit TDD. Start at the center of the object graph and grow outwar
 
 Each test expresses exactly one behavior in its name and verifies exactly one behavior in its body.
 
-- **Test names are English sentences** — `reports its coordinates`, `refuses a timestamp from the future`, `caches the result after first call`. If you cannot name the behavior in one sentence, the test is covering two things.
+- **Test names are English sentences** — `reports its coordinates`, `refuses a timestamp from the future`, `caches the result after first call`. If you cannot name the behavior in one sentence, the test is covering two things. In languages without free-form method names, keep the sentence in the idiom available: `it("reports its coordinates")` (Jest/RSpec), `test_reports_its_coordinates` (pytest), `@DisplayName("reports its coordinates")` (JUnit/Java).
 - **One assertion concept per test** — multiple assertion calls are fine when they describe the same concept ("the moment is committed, with the current timestamp, at the given place"). Multiple concepts per test mean a missing test.
 - **Triangulate to generalize** — when one test passes with a hard-coded value, add a second test with different inputs to force the generalization. Do not write general code preemptively; let the second red bar pull it out of you.
 
@@ -41,7 +41,7 @@ Each test expresses exactly one behavior in its name and verifies exactly one be
 If a test is hard to write, the production design is wrong. Listen to the test.
 
 - **Hard to construct** — the object has too many collaborators, or its constructor is doing work. Extract collaborators, or move the work to a first method call.
-- **Hard to isolate** — the object reaches into statics, service locators, or globals. Inject collaborators via the constructor (see `writing-organism-oriented-code` §4).
+- **Hard to isolate** — the object reaches into statics, service locators, or globals. Inject collaborators via the constructor (see `writing-organism-oriented-code`, "Composition").
 - **Hard to verify** — the object communicates through side effects you cannot observe. Replace the side effect with a return value, or introduce an `EventSink` the test can inspect.
 - **Hard to name** — the object has no single responsibility. Split it until each piece has a name you can say out loud.
 
@@ -49,14 +49,14 @@ Every friction in the test is a message. Answer it in the production code, not b
 
 ## 5. Test Design Rules
 
-TDD compounds with the test-design rules from `writing-organism-oriented-code` §6. Restated here so this skill stands on its own:
+TDD compounds with the test-design rules from `writing-organism-oriented-code`'s "Testing" section. Restated here so this skill stands on its own:
 
 - **Blackbox only** — test through public interfaces, never internals. The test exercises the organism's skin, not its organs.
 - **Prefer fakes over mocks** — use mocks only for call-count verification or for controlling external dependencies.
 - **Test method names describe behavior in natural language** — `reports its coordinates`, `throws given invalid input`.
 - **Flat test classes** — no abstract test bases, no test inheritance.
 
-These rules govern *what a test looks like*. TDD governs *when and why you write it*. Apply both together. The canonical statement of these rules lives in `writing-organism-oriented-code` §6 — update both skills if the rules evolve.
+These rules govern *what a test looks like*. TDD governs *when and why you write it*. Apply both together. The canonical statement of these rules lives in `writing-organism-oriented-code`'s "Testing" section — if these copies diverge, that section wins.
 
 ## 6. Commits Around the Cycle
 
@@ -66,9 +66,19 @@ TDD and `working-with-git-repositories` reinforce each other. The cycle maps nat
 - **Refactor commits are separate from behavior commits** — a refactor that spans multiple cycles gets its own commit, with a subject like `Extract CachingMoments from FilesystemMoments`. Behavior changes and structural changes stay reviewable in isolation.
 - **Never commit red** — the quality gate must pass before the commit lands. A commit that leaves a test failing is broken history.
 
-## 7. What NOT to Do
+## 7. Planning
 
-- No writing production code without a failing test — the test is the license.
+When writing an implementation plan (rather than executing directly), embed the TDD workflow into the plan so the executing agent has explicit instructions to follow:
+
+- **Test plan** — list the behaviors to be test-driven as natural-language test names, in the order they will be written (inside-out: value types first, then the objects that use them). One line per behavior; add a concise description only where the name alone is ambiguous.
+- **Cycle discipline** — state that each behavior follows red-green-refactor and that commits land per green cycle (see "Commits Around the Cycle").
+- **Fakes** — name the fakes to be created or extended alongside the interfaces they mimic.
+
+These details must appear in the plan itself — do not assume the executing agent has access to this skill's conventions.
+
+## 8. What NOT to Do
+
+- No writing production code without a failing test — the test is the license. This governs behavior-bearing production code; configuration, build scripts, documentation, and pure formatting changes are exempt — but a bug fix always starts with a failing reproduction test.
 - No writing multiple tests before a green bar — red-green-refactor is a tight loop, not a phase.
 - No refactoring on red — refactor is a no-op on behavior; you need green to prove it.
 - No "I'll add the test later" — later never comes, and the design pressure is lost.
