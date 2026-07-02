@@ -7,20 +7,20 @@ description: OpenTelemetry specification expertise for auditing, building, and r
 
 The OpenTelemetry specification is the contract. Every SDK, instrumentation library, collector, and exporter either satisfies it or violates it. This skill equips you with a distilled knowledge base and structured workflows to apply that contract — whether auditing an existing implementation, building a new one, or reviewing changes.
 
-The knowledge base is split into 8 focused reference files. Read only what the current task requires.
+The knowledge base is split into 8 focused reference files. Read only what the current task requires. All `reference/` paths below are relative to this skill's root directory — the directory containing this SKILL.md.
 
 ## 1. Reference Files
 
 | File | When to Read | Contents |
 | ---- | ------------ | -------- |
-| `skill/reference/overview.md` | Always — first step for any task | Architecture & API/SDK split, error handling, performance, versioning, cross-signal patterns |
-| `skill/reference/cross-cutting.md` | When working with any signal | Context API, Propagators, Resource SDK, Common attributes, Instrumentation Scope |
-| `skill/reference/traces.md` | When working with traces | TracerProvider, Tracer, Span, SpanContext, Sampling, SpanProcessor, SpanExporter |
-| `skill/reference/metrics.md` | When working with metrics | MeterProvider, Meter, 7 instrument types, Views, Aggregation, Cardinality, Exemplars |
-| `skill/reference/logs.md` | When working with logs | LogRecord data model, LoggerProvider, Logger, LogRecordProcessor, bridge pattern |
-| `skill/reference/baggage-and-configuration.md` | When working with baggage or config | Baggage API, all OTEL_* env vars, declarative configuration |
-| `skill/reference/compliance-checklist.md` | When auditing for compliance | MUST/MUST NOT checkboxes organized by component (A.1–A.12) |
-| `skill/reference/file-index.md` | When navigating to original spec files | Compatibility areas, lower-priority signals, all 86 spec files with paths and line counts |
+| `reference/overview.md` | Always — first step for any task | Architecture & API/SDK split, error handling, performance, versioning, cross-signal patterns |
+| `reference/cross-cutting.md` | When working with any signal | Context API, Propagators, Resource SDK, Common attributes, Instrumentation Scope |
+| `reference/traces.md` | When working with traces | TracerProvider, Tracer, Span, SpanContext, Sampling, SpanProcessor, SpanExporter |
+| `reference/metrics.md` | When working with metrics | MeterProvider, Meter, 7 instrument types, Views, Aggregation, Cardinality, Exemplars |
+| `reference/logs.md` | When working with logs | LogRecord data model, LoggerProvider, Logger, LogRecordProcessor, bridge pattern |
+| `reference/baggage-and-configuration.md` | When working with baggage or config | Baggage API, all OTEL_* env vars, declarative configuration |
+| `reference/compliance-checklist.md` | When auditing for compliance | MUST/MUST NOT checkboxes organized by component (A.1–A.12) |
+| `reference/file-index.md` | When navigating to original spec files | Compatibility areas, lower-priority signals, all 86 spec files with paths and line counts |
 
 **Tier system** (used throughout the reference files):
 - **Tier 1 (Inline):** Full MUST requirements, API contracts, defaults, env vars — act on this directly
@@ -35,7 +35,7 @@ The reference files are distilled from a specific commit of the upstream specifi
 
 Before relying on the reference content:
 
-1. Read the source commit hash from `skill/reference/overview.md` (recorded in its header)
+1. Read the source commit hash from `reference/overview.md` (recorded in its header)
 2. Check the upstream repository for changes since that commit:
    - Repository: https://github.com/open-telemetry/opentelemetry-specification
    - Use `gh api repos/open-telemetry/opentelemetry-specification/compare/{source_commit}...HEAD` or WebFetch to compare against latest HEAD
@@ -50,10 +50,10 @@ Before relying on the reference content:
 ### 3.1 Compliance Auditing
 
 1. Run freshness validation (Section 2)
-2. Read `skill/reference/overview.md` for architecture principles
+2. Read `reference/overview.md` for architecture principles
 3. Identify which components the target project implements (API? SDK? Both? Which signals?)
-4. Read `skill/reference/cross-cutting.md` + the relevant signal file(s) (`traces.md` / `metrics.md` / `logs.md`)
-5. Read `skill/reference/compliance-checklist.md` and work through the relevant component sections
+4. Read `reference/cross-cutting.md` + the relevant signal file(s) (`traces.md` / `metrics.md` / `logs.md`)
+5. Read `reference/compliance-checklist.md` and work through the relevant component sections
 6. For each requirement, verify the target project's implementation against the checklist
 7. When Tier 1 content is insufficient, follow `[Source: ...]` pointers to the original spec files
 8. Report findings with spec file references; distinguish MUST violations from SHOULD recommendations
@@ -61,16 +61,16 @@ Before relying on the reference content:
 ### 3.2 Building / Implementing
 
 1. Run freshness validation (Section 2)
-2. Read `skill/reference/overview.md` — internalize API/SDK split, error handling rules, performance constraints, cross-signal patterns
-3. Read `skill/reference/cross-cutting.md` — Context, Resource, and Common types apply to all signals
+2. Read `reference/overview.md` — internalize API/SDK split, error handling rules, performance constraints, cross-signal patterns
+3. Read `reference/cross-cutting.md` — Context, Resource, and Common types apply to all signals
 4. Read the relevant signal file (`traces.md` / `metrics.md` / `logs.md`) for the component being built
-5. Read `skill/reference/baggage-and-configuration.md` if the component handles baggage, env vars, or config files
+5. Read `reference/baggage-and-configuration.md` if the component handles baggage, env vars, or config files
 6. Follow `[Source: ...]` pointers for implementation-level detail beyond Tier 1 summaries
 
 ### 3.3 Code Review / PR Review
 
 1. Run freshness validation (Section 2)
-2. Read `skill/reference/overview.md` for foundational principles
+2. Read `reference/overview.md` for foundational principles
 3. Identify which spec areas the changes touch
 4. Read only the relevant signal/topic reference file(s)
 5. Verify changes against MUST/MUST NOT requirements in those sections

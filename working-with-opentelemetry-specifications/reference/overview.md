@@ -18,7 +18,7 @@
 
 **Source pointers:** Every subsection has `[Source: path]` — jump to those files for full normative text.
 
-**For compliance auditing:** Read `skill/reference/compliance-checklist.md` for checkbox-formatted MUST/MUST NOT requirements per component.
+**For compliance auditing:** Read `reference/compliance-checklist.md` for checkbox-formatted MUST/MUST NOT requirements per component.
 
 ---
 
