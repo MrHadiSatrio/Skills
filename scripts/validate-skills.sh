@@ -2,7 +2,18 @@
 # Validates every skill against the authoring conventions
 # (see authoring-agent-skills/SKILL.md): frontmatter parses,
 # `name` matches the directory, and every relative .md path
-# referenced in a SKILL.md resolves on disk.
+# referenced in a bundled markdown file resolves on disk.
+#
+# Path checking covers backtick-quoted .md paths that contain a
+# directory component, resolved against the skill root and the
+# referencing file's own directory. A file whose backticked paths
+# deliberately point outside the skill (an index of upstream files)
+# opts out by containing the marker: <!-- lint:external-paths -->
+#
+# Known blind spots, by design: bare same-directory filenames
+# (`overview.md`), non-.md files (`cd.yaml`), and dot-leading or
+# parent-relative paths (`.github/...`, `../...`) are not checked —
+# the character class cannot distinguish them from prose examples.
 set -euo pipefail
 
 root="$(cd "$(dirname "$0")/.." && pwd)"
@@ -32,12 +43,17 @@ for skill_md in "$root"/*/SKILL.md; do
     fail "$skill: frontmatter name '$name' does not match the directory name"
   fi
 
-  # Backtick-quoted relative .md paths with a directory component must
-  # resolve from the skill root. Tokens with placeholders (<, {) never
-  # match the character class and are ignored.
-  while IFS= read -r ref; do
-    [ -f "$dir/$ref" ] || fail "$skill: referenced path '$ref' does not exist"
-  done < <(grep -oE '`[a-zA-Z0-9_-]+(/[a-zA-Z0-9_.-]+)+\.md`' "$skill_md" | tr -d '\140' | sort -u)
+  while IFS= read -r -d '' doc; do
+    if grep -q '<!-- lint:external-paths -->' "$doc"; then
+      continue
+    fi
+    docdir="$(dirname "$doc")"
+    while IFS= read -r ref; do
+      if [ ! -f "$dir/$ref" ] && [ ! -f "$docdir/$ref" ]; then
+        fail "$skill: ${doc#"$root"/} references '$ref', which does not exist"
+      fi
+    done < <(grep -oE '`[a-zA-Z0-9_-]+(/[a-zA-Z0-9_.-]+)+\.md`' "$doc" | tr -d '\140' | sort -u)
+  done < <(find "$dir" -name '*.md' -print0)
 done
 
 if [ "$failures" -gt 0 ]; then

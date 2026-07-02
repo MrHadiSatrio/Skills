@@ -1,6 +1,9 @@
 # OpenTelemetry Specification: Compatibility, Lower-Priority Areas & File Index
 
+<!-- lint:external-paths -->
+
 > Compatibility shims, lower-priority signals, and the complete index of all 86 spec files.
+> Every path in this file points into the UPSTREAM spec's `specification/` directory — resolve them with the retrieval recipe in this skill's SKILL.md, not on local disk.
 
 ---
 
