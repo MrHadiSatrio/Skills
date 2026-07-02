@@ -29,6 +29,8 @@ Examples:
 
 Always run the project's quality gate before committing — tests, linting, formatting, coverage, whatever the project defines. A commit that breaks the quality gate is not acceptable. When the repository defines a single command for this (e.g., `./gradlew check`, `npm test`, `make check`), prefer that over running individual tools.
 
+To discover the gate, check in order: `CLAUDE.md`, CI workflow files (`.github/workflows/`, `.gitlab-ci.yml`, `Jenkinsfile`), then build-tool entry points (`package.json` scripts, `Makefile` targets, Gradle tasks). If none reveals it, ask the user rather than guessing.
+
 ## 2. Branches
 
 Name branches with a category prefix and a snake_case descriptor:
@@ -44,11 +46,20 @@ Keep descriptors short and specific. The branch name should tell a reviewer what
 
 Standard merge commits. Do not rebase feature branches onto the main branch — preserve the branch topology in the history. Merge commit messages follow Git's default: `Merge branch '<branch-name>' into <target>`.
 
-## 4. Tags
+Exception: when the project demonstrably uses a different strategy (squash-merge or rebase-merge — check recently merged PRs or `git log --merges`), match the project.
+
+## 4. Pull Requests
+
+- **Title** follows the commit-subject format — imperative mood, sentence-case, no trailing period. When the PR wraps a single commit, reuse that commit's subject.
+- **Body** answers three questions in short prose: what changed, why it changed, and how it was verified (the quality-gate command run, any manual checks). Not a changelog — the commit history already narrates the steps.
+- **Match the project's PR conventions** — check for `.github/PULL_REQUEST_TEMPLATE.md` (or equivalent), required sections, and issue-linking practices before writing.
+- **One branch, one intent** — if the branch accumulated unrelated work, split it before raising the PR.
+
+## 5. Tags
 
 Semantic versioning: `v<major>.<minor>.<patch>`. No prerelease suffixes unless the project explicitly uses them. Tag releases on the main integration branch, not on feature branches.
 
-## 5. Planning
+## 6. Planning
 
 When writing an implementation plan (rather than executing directly), embed Git workflow details into the plan so the executing agent has explicit instructions to follow:
 
@@ -58,7 +69,7 @@ When writing an implementation plan (rather than executing directly), embed Git 
 
 These details must appear in the plan itself — do not assume the executing agent has access to this skill's conventions.
 
-## 6. What NOT to Do
+## 7. What NOT to Do
 
 - Don't bundle unrelated changes in one commit — split them.
 - Don't write commit subjects in past tense ("Added", "Fixed") — use imperative mood ("Add", "Fix").
