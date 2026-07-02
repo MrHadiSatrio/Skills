@@ -38,7 +38,7 @@ Read test names. Read test setup. Read fakes. Skip test bodies. Build understand
 
 ### Broad exploration — Explore subagents
 
-For surveying test coverage across a module, discovering domain boundaries through test structure, or cataloging behaviors of a subsystem, delegate to Explore subagents. Subagents run in a separate context window — only their summary returns to the main conversation — making them inherently token-efficient.
+For surveying test coverage across a module, discovering domain boundaries through test structure, or cataloging behaviors of a subsystem, delegate to Explore subagents. Subagents run in a separate context window — only their summary returns to the main conversation — making them inherently token-efficient. If subagents are unavailable in this runtime, perform the same constrained reading directly with Glob, Grep, and Read, keeping reads bounded as described below.
 
 When spawning an Explore subagent, include these constraints in the prompt:
 

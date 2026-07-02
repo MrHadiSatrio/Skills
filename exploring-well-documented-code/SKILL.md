@@ -39,7 +39,7 @@ Read contracts. Skip bodies. Build understanding layer by layer.
 
 ### Broad exploration — Explore subagents
 
-For understanding module architecture, discovering key types, or surveying a package, delegate to Explore subagents. Subagents run in a separate context window — only their summary returns to the main conversation — making them inherently token-efficient.
+For understanding module architecture, discovering key types, or surveying a package, delegate to Explore subagents. Subagents run in a separate context window — only their summary returns to the main conversation — making them inherently token-efficient. If subagents are unavailable in this runtime, perform the same constrained reading directly with Glob, Grep, and Read, keeping reads bounded as described below.
 
 When spawning an Explore subagent, include these constraints in the prompt:
 
@@ -62,13 +62,13 @@ This strategy requires documentation to be present and meaningful. Read the spec
 - **The user asks about implementation** — "how does this work" requires the body by definition.
 - **Side effects or failure modes are undocumented** — if you need to know error behavior and the docs don't describe it.
 
-If early exploration reveals consistently sparse documentation, warn the user and suggest switching to normal exploration.
+If early exploration reveals consistently sparse documentation, warn the user, then suggest switching to `exploring-well-tested-code` when the test suite has well-named tests (test names are the specification when doc comments are not), or to normal exploration otherwise.
 
 ## 4. What NOT to Do
 
 - Do not read method or function bodies unless escalation criteria from section 3 are met.
 - Do not read full files — Grep to locate, then Read with offset/limit to extract. Exception: pure contract files (interfaces, enums, type definitions).
-- Do not read test files to understand production code.
+- Do not read test files to understand production code — unless you are switching strategies to `exploring-well-tested-code` because documentation turned out sparse while tests are well-named.
 - Do not use broad Read operations (hundreds of lines) hoping to find declarations — Grep to pinpoint first.
 - Do not read generated code, build output, or vendored dependencies.
 - Do not skip import/export statements — they are cheap to read and reveal the dependency graph.

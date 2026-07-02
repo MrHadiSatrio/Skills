@@ -7,6 +7,8 @@ description: Onboard Claude onto a new software project by exploring its archite
 
 Onboarding is an investment in every future session. The goal is to capture enough context — architecture, conventions, tooling, workflows — that any future Claude instance can produce correct code without rediscovering the project from scratch. Be thorough now so every session after this one is faster.
 
+Wherever this skill says **AskUserQuestion** and that tool is unavailable in the runtime, ask the same question in plain text and wait for the reply — never skip the question.
+
 ## 0. Pre-flight Check
 
 Before doing anything else, check whether the project is already partially onboarded:
