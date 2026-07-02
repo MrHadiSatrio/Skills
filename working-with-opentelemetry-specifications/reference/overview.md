@@ -2,7 +2,8 @@
 
 > **Source commit:** `0651981a9597850b8fed3a31ff07a262901dd341`
 > **Repository:** https://github.com/open-telemetry/opentelemetry-specification
-> **Spec root:** `specification/` (relative paths used throughout)
+> **Spec root:** `specification/` (relative paths used throughout). NOT bundled with this skill — fetch files at
+> `https://raw.githubusercontent.com/open-telemetry/opentelemetry-specification/<source-commit>/specification/<path>`
 > **Semantic Conventions:** In a SEPARATE repository — `opentelemetry/semantic-conventions`. Not covered here.
 
 ---
@@ -16,7 +17,7 @@
 
 **RFC 2119 notation:** MUST = mandatory, MUST NOT = prohibited, SHOULD = recommended, MAY = optional.
 
-**Source pointers:** Every subsection has `[Source: path]` — jump to those files for full normative text.
+**Source pointers:** Every subsection has `[Source: path]` — fetch those files for full normative text using the retrieval recipe in this skill's SKILL.md (raw.githubusercontent.com at the pinned source commit above).
 
 **For compliance auditing:** Read `reference/compliance-checklist.md` for checkbox-formatted MUST/MUST NOT requirements per component.
 

@@ -27,7 +27,12 @@ The knowledge base is split into 8 focused reference files. Read only what the c
 - **Tier 2 (Summary + Pointer):** 2-5 sentence summary + `[Source: path]` — read source for full detail
 - **Tier 3 (Pointer Only):** File path + one-line description — relevant when the task specifically touches these areas
 
-**Source pointers:** Every reference subsection has `[Source: path]` — follow these to the original spec files in the `specification/` directory for full normative text.
+**Source pointers:** Every reference subsection has `[Source: path]` — a path into the upstream spec's `specification/` directory, which is NOT bundled with this skill. To resolve a pointer:
+
+1. Read the pinned source commit hash from the header of `reference/overview.md`.
+2. Fetch the file at `https://raw.githubusercontent.com/open-telemetry/opentelemetry-specification/<pinned-commit>/specification/<path>` (WebFetch or `curl`). Use the pinned commit, not HEAD — it keeps the source consistent with what the reference files were distilled from.
+3. When a task needs many source files, clone once instead: `git clone https://github.com/open-telemetry/opentelemetry-specification && git -C opentelemetry-specification checkout <pinned-commit>`, then read from its `specification/` directory.
+4. If the source cannot be fetched (offline, no network access), report which pointer needs verification rather than citing the spec from memory.
 
 ## 2. Freshness Validation
 
