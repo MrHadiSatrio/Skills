@@ -61,6 +61,17 @@ ADR 0001 is always "Record architecture decisions" — the decision to use ADRs.
 
 ## 3. Creating New ADRs
 
+### Is this decision ADR-worthy?
+
+Apply this litmus before writing anything:
+
+- **Record it if any of these hold:** reversing it later would be expensive (a migration, a rewrite, a broken contract); it constrains code not yet written — others must conform to it; or it was chosen among viable alternatives a future reader would plausibly re-propose ("why didn't you just use X?").
+- **Skip it if all of these hold:** it is reversible by an ordinary refactor; its effect is visible entirely within the code it touches; and no future reader would ask why.
+- **Boundary examples.** ADR-worthy: "PostgreSQL over DynamoDB for the event store", "all service-to-service calls go through the message bus". Not ADR-worthy: "extract a shared helper", "rename a module", "bump a patch version".
+- **The library tiebreaker.** A dependency choice is architectural when swapping it would ripple beyond the module that imports it — the dependency-injection framework: yes; a date-formatting helper used in one file: no.
+- **When the litmus is inconclusive, ask the user** (via AskUserQuestion where available, in plain text otherwise) — never silently decide an inconclusive case needs no record. Cases the skip-litmus cleanly resolves need no prompt.
+- **One decision per record.** If the Decision section needs an "and" between unrelated choices, split them into separate ADRs.
+
 Determine the next number by reading the ADR directory and incrementing the highest existing number. Then:
 
 1. Create the file with the correct name and number.
@@ -109,6 +120,7 @@ These details must appear in the plan itself — do not assume the executing age
 
 - Don't edit an accepted ADR's Context, Decision, or Consequences — supersede or deprecate instead.
 - Don't create ADRs for trivial implementation details — reserve them for decisions that constrain future work.
+- Don't bundle unrelated decisions into one ADR — split them.
 - Don't write vague Context sections ("we needed something better") — name specific forces, constraints, and trade-offs.
 - Don't omit negative consequences — every decision has trade-offs; a one-sided Consequences section is dishonest.
 - Don't skip numbering or reuse numbers — the sequence is the timeline.
