@@ -84,7 +84,7 @@ CountLimitingMoments(
     origin = OrderRandomizingMoments(
         origin = VicinityMoments(
             coordinates = coordinates,
-            distanceLimitInM = 100.0,
+            distanceLimitInMeters = 100.0,
             origin = notableMoments
         )
     )
@@ -93,7 +93,7 @@ CountLimitingMoments(
 
 Named arguments are especially important for:
 - **Boolean parameters** — `update(isNotable = false)` instead of `update(false)`.
-- **Numeric parameters** — `distanceLimitInM = 100.0` instead of a bare `100.0`.
+- **Numeric parameters** — `distanceLimitInMeters = 100.0` instead of a bare `100.0`.
 - **Nested construction** — each `origin =` label clarifies the wrapping chain.
 
 ## 6. Commands as Imperative Verb Phrases
