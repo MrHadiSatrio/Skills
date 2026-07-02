@@ -35,6 +35,8 @@ Every SKILL.md follows the house shape:
 3. **"What NOT to Do" as the final section** — the prohibitions, each with its escape hatch inline.
 4. **A "Planning" section where applicable** — any skill whose conventions must survive into an implementation plan (Git workflow, ADRs, TDD) ends its relevant guidance with: the details must appear in the plan itself; do not assume the executing agent has access to this skill.
 
+Composite skills — an index whose whole body is a load list (`coding-like-hadi`) — are exempt from the numbered-section shape; theirs is the load list plus failure handling.
+
 ## 4. Examples
 
 - **Pseudocode shape first, Kotlin realization second.** The pseudocode carries the transferable pattern — a reader in another language copies the shape rather than transliterating Kotlin idioms. The Kotlin grounds it in one real implementation.
