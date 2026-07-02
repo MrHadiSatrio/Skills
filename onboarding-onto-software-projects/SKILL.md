@@ -166,7 +166,7 @@ Work through each area in order. Take notes as you go — they feed directly int
 
 7. **Git conventions** — Recent commit messages (`git log --oneline -30`). Scoped commits? Conventional commits? Imperative mood? PR templates? Note overlaps or conflicts with any global skills already loaded.
 
-8. **Documentation** — README, CONTRIBUTING, architecture decision records (ADRs), API docs. What does the project say about itself?
+8. **Documentation** — README, CONTRIBUTING, architecture decision records (ADRs — if present, read the trail in numeric order; records with Accepted status are binding constraints, Superseded and Deprecated ones are history), API docs. What does the project say about itself?
 
 ### Clarification
 

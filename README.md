@@ -18,7 +18,7 @@ Hadi's personal collection of agent skills for Claude — engineering convention
 | `writing-code-documentation` | Caller-facing documentation for public APIs. |
 | `practicing-test-driven-development` | Red-green-refactor, inside-out from value types, tests as design pressure. |
 | `working-with-git-repositories` | Granular commits, branch naming, merging, pull requests, tags. |
-| `working-with-adr-tracking-projects` | Nygard-format Architecture Decision Records. |
+| `working-with-adr-tracking-projects` | ADRs — when to record, how tersely, supersedure, records as constraints; Nygard format by default, match existing trails. |
 | `working-with-opentelemetry-specifications` | Distilled OTel spec knowledge plus audit/build/review workflows. |
 | `fixing-defects` | Reproduce → regression-test at the lowest layer → fix → commit together. |
 | `planning-code-changes` | The implementation-plan template: commit plan, blackbox test plan, ADRs, adversarial pass. |

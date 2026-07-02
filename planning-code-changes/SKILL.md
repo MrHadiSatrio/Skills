@@ -34,7 +34,7 @@ This is the highest-leverage section of the plan: the test names *are* the behav
 
 ## 4. ADRs
 
-When the work involves decisions that constrain future work — technology selections, protocol choices, data models, integration patterns — specify each ADR per the ADR conventions: proposed title, filename, and a brief sketch of Context and Decision. Sequence the ADR before the implementation steps it governs.
+When the work involves decisions that constrain future work — technology selections, protocol choices, data models, integration patterns — specify each ADR per the ADR conventions: proposed title, filename, and a brief sketch of Context and Decision. Sequence the ADR before the implementation steps it governs. Record a decision when reversing it would be expensive, when it constrains unwritten code, or when a future reader would plausibly re-propose the alternative; if these diverge, `working-with-adr-tracking-projects`' "Is this decision ADR-worthy?" section wins.
 
 ## 5. The Adversarial Pass
 
