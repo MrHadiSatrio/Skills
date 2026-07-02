@@ -13,7 +13,7 @@ Before creating or referencing ADRs, locate where they live:
 
 1. Check for a `.adr-dir` file at the project root — it contains the ADR directory path (e.g., `doc/adr`).
 2. If no `.adr-dir` exists, check for `doc/adr/` directly.
-3. If neither exists, the project does not use ADRs yet. Do not bootstrap uninvited — ask the user first (via AskUserQuestion where available, in plain text otherwise). With their approval: create `doc/adr/`, create a `.adr-dir` file at the project root containing `doc/adr`, and write ADR 0001 ("Record architecture decisions") as the first entry.
+3. If neither exists, the project does not use ADRs yet. Do not bootstrap uninvited — ask the user first (via AskUserQuestion where available, in plain text otherwise). With their approval: create `doc/adr/`, create a `.adr-dir` file at the project root containing `doc/adr`, and write ADR 0001 ("Record architecture decisions") as the first entry — copy and adapt this skill's bundled `reference/0001-record-architecture-decisions.md`. If the bundled reference files are unavailable in your runtime, the template in the "ADR Format" section alone suffices.
 
 List existing ADRs by reading the directory — there is no index file. The filenames are the table of contents. Read them in numeric order to follow the decision timeline.
 
@@ -70,7 +70,7 @@ does it force?]
 
 ### The meta-ADR
 
-ADR 0001 is always "Record architecture decisions" — the decision to use ADRs. It bootstraps the practice and serves as a template for all subsequent entries.
+ADR 0001 is always "Record architecture decisions" — the decision to use ADRs. It bootstraps the practice and serves as a template for all subsequent entries. A filled copy ships with this skill at `reference/0001-record-architecture-decisions.md` — match its length and tone in every record you write.
 
 ## 4. Creating New ADRs
 
@@ -136,6 +136,8 @@ Links go in both directions, and every link target is a bare same-directory file
 2. Optionally add a one-line note in the Status section explaining why (e.g., "the subsystem this governed was decommissioned").
 
 These are the only permitted edits to an accepted ADR. The Context, Decision, and Consequences sections remain untouched — they are the historical record.
+
+A worked pair ships with this skill: `reference/0002-store-events-in-postgresql.md` and `reference/0003-move-the-event-store-to-eventstoredb.md` demonstrate the exact status edits, the bidirectional links, and a carried-forward decision.
 
 ## 6. Planning
 
