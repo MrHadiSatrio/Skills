@@ -72,6 +72,8 @@ Use language features to make expressions read as close to English as the langua
 - **Delegation** — `EditableMoment by origin`. "X by Y" reads as "X backed by Y."
 - **Functional interfaces** — `Decor { ... }`, `UseCase { ... }`. A single-method interface invoked as a lambda reads as a verb.
 
+In languages without these features, keep the sentence-like reading with what the language offers: no operator overloading → intention-named methods (`timestamp.minus(hours(24))`); no extension properties → factory functions (`Duration.ofHours(24)`); no range operators → named predicates (`timeRange.contains(timestamp)`); no delegation keyword → explicit forwarding inside a wrapper.
+
 ## 5. Named Arguments as Prose Clarifiers
 
 At call sites, use named arguments to make construction and invocation self-documenting. Each argument label reads as a clause in a sentence.
@@ -102,6 +104,13 @@ Use cases, commands, and actions are named as imperative verb phrases, optionall
 - **Without article for aggregate operations** — "Show Stories", "Alert Inactivity".
 - **The article "A" signals** that the operation targets one specific entity.
 
+As identifiers, the phrases keep their words and drop the spaces:
+
+```kotlin
+class EditAMoment(private val moments: Moments) : UseCase
+class ShowStories(private val presenter: Presenter) : UseCase
+```
+
 ## 7. Fluent Mutation via Method Overloading
 
 Multiple overloads of the same method name accepting different argument types create a narrative mutation sequence. Each call reads as a step in a story.
@@ -128,6 +137,8 @@ when (event) {
 }
 ```
 
+Type-dispatch like this belongs at system boundaries — event routing, deserialization, protocol handling — where the protocol closes the set of cases. Inside the domain, prefer polymorphic dispatch through the interface; see `writing-organism-oriented-code`, "What NOT to Do".
+
 ## 9. Validation as Complete Sentences
 
 Error messages in precondition checks (`require`, `check`, `assert`) are full English sentences with punctuation. They describe the violated contract, not an implementation detail.
@@ -141,7 +152,7 @@ When constructing object graphs through nested decoration and named arguments, t
 
 ## 11. What NOT to Do
 
-- No abbreviations in names — `coordinates` not `coords`, `timestamp` not `ts`, `configuration` not `config`.
+- No abbreviations in names — `coordinates` not `coords`, `timestamp` not `ts`, `configuration` not `config`. Universally-lexicalized short forms are permitted: `id`, `url`, and unit-suffixed quantities in names like `last24h`.
 - No technical jargon where a domain word exists — consult the domain vocabulary first.
 - No deeply nested control flow — extract conditions to named booleans or blocks to named methods.
 - No unnamed boolean or numeric literals at call sites — use named arguments or named constants.
