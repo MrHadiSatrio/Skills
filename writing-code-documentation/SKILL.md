@@ -1,6 +1,6 @@
 ---
 name: writing-code-documentation
-description: Conventions on writing code documentation for public APIs. Always use when writing new features or greenfield code. Always use, with-user-approval, when refactoring existing code.
+description: Conventions on writing code documentation for public APIs. Always use when writing new features or greenfield code. When refactoring existing code, also use — but ask the user before adding documentation to previously undocumented APIs.
 ---
 
 # Code Documentation
@@ -27,11 +27,11 @@ Additional context a caller needs: edge cases, threading guarantees, preconditio
 
 A short code example showing how to obtain the service described. Skip if usage is trivial or inferrable from the constructor/method signatures.
 
-### Annotation Tags (non-optional where the language supports them)
+### Annotation Tags (use where they add caller-facing information)
 
-- Apply any annotation relevant to the callable or type — `@param`, `@return`/`@returns`, `@throws`/`@exception`, `@deprecated`, `@see`, `@since`, and so on.
+- Use the language's annotation tags — `@param`, `@return`/`@returns`, `@throws`/`@exception`, `@deprecated`, `@see`, and so on — for every piece of caller-facing information not already clear from the signature.
 - One line per tag — never multi-paragraph.
-- Only include tags that add caller-facing information not already clear from the signature.
+- Omit a tag entirely when the signature already says it all — a `@param moment the moment` line is noise, not documentation.
 - Prefer annotations that document behaviour over metadata annotations: `@since` is rarely useful (callers shouldn't need to know when something was added) and `@author` is noise in a version-controlled codebase — skip both unless the project explicitly requires them.
 
 ## 2. What NOT to Do
@@ -79,7 +79,6 @@ Good:
  * Writes are atomic — a partial failure won't corrupt existing data.
  * Thread-safe; concurrent writes to the same [Moment] are serialized.
  *
- * @param moment Moment to persist.
  * @return The persisted Moment with its updated timestamp.
  */
 fun save(moment: Moment): Moment
