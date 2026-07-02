@@ -18,6 +18,62 @@ Objects are alive. They are autonomous organisms that own their behavior, intera
 - **Minimal interfaces** — contracts should be focused. One interface, one responsibility. *Interface width is a budget for the option space above it.* A small contract makes every wrapper, fake, null-object, filter, and composite cheap to write. A wide one makes them all expensive — silently pushing the writer toward inheritance, annotation-driven frameworks, or flag-driven configuration when composition stops being the path of least resistance.
 - **No `I` prefix or `Impl` suffix** — `Place`, not `IPlace`; `FilesystemMoment`, not `MomentImpl`.
 
+### In code
+
+The read/write split — the shape, in pseudocode:
+
+```
+interface Moment                          # reading only
+    place, timestamp, sentiment
+
+interface EditableMoment extends Moment   # mutation added by extension
+    update(...), commit()
+
+present(moment: Moment)                   # a presenter cannot mutate
+edit(moment: EditableMoment)              # an editor can
+```
+
+One realization, in Kotlin:
+
+```kotlin
+interface Moment {
+    val place: Place
+    val timestamp: Timestamp
+}
+
+interface EditableMoment : Moment {
+    fun update(place: Place)
+    fun commit()
+}
+```
+
+The Null Object — absence as behavior, not as `null`:
+
+Bad:
+
+```kotlin
+fun currentPlace(): Place?   // every caller forks on null
+```
+
+Good — the shape, in pseudocode:
+
+```
+class NoPlace implements Place       # a behavioral stand-in for "nowhere"
+    name          -> "nowhere"
+    distanceTo(x) -> unknown distance
+
+currentPlace() always returns a Place; callers never fork
+```
+
+One realization, in Kotlin:
+
+```kotlin
+object NoPlace : Place {
+    override val name = Name("nowhere")
+    override fun distanceTo(other: Coordinates) = Distance.UNKNOWN
+}
+```
+
 ## 2. Naming
 
 - **Interfaces** are named after the domain concept itself — `Place`, `Moment`, `Coordinates`, `EventSink`.
@@ -42,6 +98,36 @@ Composition is the primary means to extend and control behavior. Its viability d
 - **Wrappers** implement the same interface as the wrapped `origin`. They may decorate (add behavior), proxy (control access), filter, cache, defer, merge, or adapt.
 - **Composite / fan-out** classes for multi-dispatch (e.g., `EventSinks` forwards events to every wrapped sink).
 - **All dependencies via constructor injection.** No service locators. No DI framework annotations in domain code.
+
+### In code
+
+A wrapper — the shape, in pseudocode:
+
+```
+class CachingPlaces implements Places      # same contract as what it wraps
+    constructor(origin: Places)
+    findPlace(id) -> cached value if present,
+                     else delegate to origin and remember the answer
+```
+
+One realization, in Kotlin:
+
+```kotlin
+class CachingPlaces(private val origin: Places) : Places {
+    private val known = mutableMapOf<Uuid, Place>()
+
+    override fun findPlace(id: Uuid): Place =
+        known.getOrPut(id) { origin.findPlace(id) }
+}
+```
+
+A composite — plural name, same contract, fans out to every member:
+
+```kotlin
+class EventSinks(private vararg val sinks: EventSink) : EventSink {
+    override fun sink(event: Event) = sinks.forEach { it.sink(event) }
+}
+```
 
 ## 5. Packaging
 
