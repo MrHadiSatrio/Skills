@@ -25,7 +25,7 @@ Classical / Detroit TDD. Start at the center of the object graph and grow outwar
 
 - **Begin with the value types** — `Timestamp`, `Uuid`, `Coordinates`. These are self-validating and have no collaborators; they are the easiest unit to test-drive and they anchor the domain vocabulary.
 - **Add behavior in layers** — once a value type is green, test-drive the domain object that uses it, then the repository that stores it, then the wrapper that caches it. Each new layer is built on already-green primitives.
-- **Real collaborators or fakes, not mocks** — when the object under test needs a dependency, prefer the real implementation (if it is cheap, pure, and already green) or a `Fake`. Mocks belong only at the system boundary, where a real dependency is a network, a clock, or a filesystem.
+- **Real collaborators or fakes, not mocks** — when the object under test needs a dependency, prefer the real implementation (if it is cheap, pure, and already green) or a `Fake`. Mocks belong only at the system boundary — where a real dependency is a network, a clock, or a filesystem — or wherever call-count verification is the very behavior under test (see "Test Design Rules").
 - **Fakes grow alongside the interface they mimic** — when a new method appears on an interface, the `Fake` gets the same method. The `Fake` is the second implementation of the contract, and its simplicity is proof that the contract is small enough.
 
 ## 3. One Behavior per Test
@@ -78,7 +78,7 @@ These details must appear in the plan itself — do not assume the executing age
 
 ## 8. What NOT to Do
 
-- No writing production code without a failing test — the test is the license. This governs behavior-bearing production code; configuration, build scripts, documentation, and pure formatting changes are exempt — but a bug fix always starts with a failing reproduction test.
+- No writing production code without a failing test — the test is the license. This governs behavior-bearing production code; configuration, build scripts, documentation, and pure formatting changes are exempt — but a bug fix always starts with a failing reproduction test. Sole exception: a production emergency, where the smallest mitigating change may land first and the reproduction test follows in the same pull request (see `fixing-defects`, "The Hotfix Escape Hatch").
 - No writing multiple tests before a green bar — red-green-refactor is a tight loop, not a phase.
 - No refactoring on red — refactor is a no-op on behavior; you need green to prove it.
 - No "I'll add the test later" — later never comes, and the design pressure is lost.
