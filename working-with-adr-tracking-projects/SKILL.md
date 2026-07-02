@@ -95,7 +95,7 @@ ADRs are immutable records once accepted. A `Proposed` ADR is still a draft — 
 
 These are the only permitted edits to an accepted ADR. The Context, Decision, and Consequences sections remain untouched — they are the historical record.
 
-## 5. Planning Integration
+## 5. Planning
 
 When writing an implementation plan that involves architectural choices, include ADR creation as explicit steps:
 
