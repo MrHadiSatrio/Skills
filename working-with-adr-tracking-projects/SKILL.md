@@ -19,7 +19,11 @@ List existing ADRs by reading the directory — there is no index file. The file
 
 ## 2. ADR Format
 
-Every ADR follows Michael Nygard's original format. The template:
+New practice bootstraps with Michael Nygard's original format, and projects already on it stay on it. In a project whose existing records follow another convention — MADR, adr-tools ordering, a bespoke template — match the existing records: consistency within the trail beats conformance to this template, and never reformat existing records.
+
+Format-matching covers the whole lifecycle, not just headings: section names, status vocabulary, and supersedure markers all follow the trail's convention. The exact strings in this skill (the status set, `Superseded by …` / `Supersedes …`) apply to Nygard-format trails; in a foreign-format trail, map the intent — records immutable once accepted, supersedure linked in both directions, acceptance is the team's call — onto the trail's own vocabulary, and ask the user where the mapping is unclear.
+
+The template:
 
 ```
 # [Number]. [Title]
@@ -146,4 +150,4 @@ These details must appear in the plan itself — do not assume the executing age
 - Don't skip numbering or reuse numbers — the sequence is the timeline.
 - Don't create subdirectories within the ADR directory — all ADRs are peers in a flat directory.
 - Don't create an index file or TOC — the filesystem is the index; filenames are self-describing.
-- Don't write the code first and backfill the ADR afterward — the record captures the decision at the moment it is made, not as post-hoc documentation.
+- Don't write the code first and backfill the ADR afterward — for new decisions, the record captures the decision at the moment it is made, not as post-hoc documentation. Recording a pre-existing, undocumented decision is legitimate: date it the day it is written and open its Context with a retrospective marker — e.g., "Recorded retrospectively: this decision was made circa 2023, when…".
