@@ -40,6 +40,7 @@ For complex decisions, use ### subsections to break down different aspects.]
 ## Status
 
 [One of: Proposed | Accepted | Deprecated | Superseded by [ADR NNNN](NNNN-name.md)]
+[An accepted ADR that replaces another adds a second line: Supersedes [ADR NNNN](NNNN-name.md)]
 
 ## Consequences
 
@@ -78,6 +79,8 @@ Determine the next number by reading the ADR directory and incrementing the high
 2. Set the date to today.
 3. Set the status to `Proposed` if the decision is under discussion, or `Accepted` if it is already agreed upon.
 
+Flipping `Proposed` to `Accepted` is the user's or team's call — never do it unilaterally. Exception: an ADR specified in a plan the user approved may be created as `Accepted`; the approval already happened. If you encounter a stale `Proposed` record during other work, flag it to the user — do not treat it as binding, and do not adopt or delete it.
+
 ### Length and tone
 
 - **The whole record fits on one page.** A future reader should get the decision and its why in minutes: Context in one to three paragraphs, Decision in a sentence to a paragraph (`###` subsections only for genuinely multi-part decisions), Consequences as a handful of concrete effects.
@@ -101,10 +104,19 @@ Be honest. Every decision has trade-offs. List what becomes easier and what beco
 
 ADRs are immutable records once accepted. A `Proposed` ADR is still a draft — edit it freely until it is accepted. Do not edit an accepted ADR to change its decision. Instead:
 
+**When does a new decision supersede an old one?** Supersede only when following the old record would now be wrong. If the old and the new decision can both be obeyed simultaneously, the new ADR stands alone — reference the old one in its Context if they are related, but leave its status untouched.
+
 **Superseding** — when a new decision replaces an old one:
 
 1. Create the new ADR. In its Context section, reference the old ADR and explain why circumstances changed.
-2. In the old ADR, change only the Status field to: `Superseded by [ADR NNNN](NNNN-name.md)`.
+2. In the new ADR's Status section, below its status, add the back-link: `Supersedes [ADR NNNN](NNNN-name.md)`.
+3. In the old ADR, change only the Status field to: `Superseded by [ADR MMMM](MMMM-name.md)`.
+
+Links go in both directions, and every link target is a bare same-directory filename — ADRs live in a flat directory, so a sibling filename always resolves.
+
+**Supersede whole records only.** When a new decision invalidates part of an old ADR, supersede the whole record and restate what still holds in the new ADR's Decision section ("Carried forward from ADR NNNN: …"). Never leave a record half-live.
+
+**Number collisions** — when two branches each claim the same next number, resolve at merge time: the later-merged ADR renumbers — filename, heading, and any links pointing to it.
 
 **Deprecating** — when a decision is no longer relevant without a replacement:
 
