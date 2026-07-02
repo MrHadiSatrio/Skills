@@ -13,7 +13,7 @@ Objects are alive. They are autonomous organisms that own their behavior, intera
 
 - **Objects own behavior** — no anemic models. A domain object is never a data bag manipulated by external "service" logic; it encapsulates the rules that govern it.
 - **Value types for domain primitives** — self-validating, self-describing, comparable. A `Timestamp` validates its range at construction; a `Uuid` refuses invalid strings.
-- **Null Object pattern over nullable types** — represent absence with a behavioral object (`Nobody`, `NoPlace`, `EmptyMoments`) rather than `null`.
+- **Null Object pattern over nullable types** — represent absence with a behavioral object (`Nobody`, `NullIsland`, `EmptyMoments`) rather than `null`.
 - **Read/write interface split** — an immutable interface for reading, extended by a mutable interface for mutation. Callers that only read never see mutation methods.
 - **Minimal interfaces** — contracts should be focused. One interface, one responsibility. *Interface width is a budget for the option space above it.* A small contract makes every wrapper, fake, null-object, filter, and composite cheap to write. A wide one makes them all expensive — silently pushing the writer toward inheritance, annotation-driven frameworks, or flag-driven configuration when composition stops being the path of least resistance.
 - **No `I` prefix or `Impl` suffix** — `Place`, not `IPlace`; `FilesystemMoment`, not `MomentImpl`.
@@ -58,8 +58,8 @@ fun currentPlace(): Place?   // every caller forks on null
 Good — the shape, in pseudocode:
 
 ```
-class NoPlace implements Place       # a behavioral stand-in for "nowhere"
-    name          -> "nowhere"
+class NullIsland implements Place    # the cartographic stand-in for "nowhere"
+    name          -> "Null Island"
     distanceTo(x) -> unknown distance
 
 currentPlace() always returns a Place; callers never fork
@@ -68,8 +68,8 @@ currentPlace() always returns a Place; callers never fork
 One realization, in Kotlin:
 
 ```kotlin
-object NoPlace : Place {
-    override val name = Name("nowhere")
+object NullIsland : Place {
+    override val name = Name("Null Island")
     override fun distanceTo(other: Coordinates) = Distance.UNKNOWN
 }
 ```
