@@ -144,11 +144,11 @@ class EventSinks(private vararg val sinks: EventSink) : EventSink {
 
 ## 7. What NOT to Do
 
-- No `*Utils`, `*Helper`, `*Manager`, `*Service` classes.
-- No data-only classes for objects that should own behavior.
+- No `*Utils`, `*Helper`, `*Manager`, `*Service` classes — unless a platform mandates the name (an Android `Service`, a framework-registered `*Service` bean); keep the mandated class a thin shell that delegates to domain objects.
+- No data-only classes for objects that should own behavior — pure data carriers are acceptable at serialization boundaries (wire DTOs, database rows); keep them at the edge, never inside the domain.
 - No nullable types where a null object can exist.
-- No sealed classes/enums for polymorphism — use interface composition.
-- No annotation-driven frameworks inside domain logic.
-- No getter/setter methods — use language-native properties.
+- No sealed classes/enums for polymorphism — use interface composition. Exception: at system boundaries where the protocol closes the set of cases (wire formats, event routing, deserialization), type-dispatch over a sealed hierarchy is acceptable — see `writing-prose-like-code`, "Decision Tables via Pattern Matching".
+- No annotation-driven frameworks inside domain logic — wiring annotations may exist at the application edge (DI configuration, serialization adapters), but they stop at the domain boundary.
+- No getter/setter methods — use language-native properties. In languages without properties (Java), expose intention-named accessors (`coordinates()`, not `getCoordinates()`) and avoid bean-style getter/setter pairs.
 - No base classes for code reuse — use composition.
 
