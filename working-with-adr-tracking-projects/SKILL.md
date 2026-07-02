@@ -78,13 +78,20 @@ Determine the next number by reading the ADR directory and incrementing the high
 2. Set the date to today.
 3. Set the status to `Proposed` if the decision is under discussion, or `Accepted` if it is already agreed upon.
 
+### Length and tone
+
+- **The whole record fits on one page.** A future reader should get the decision and its why in minutes: Context in one to three paragraphs, Decision in a sentence to a paragraph (`###` subsections only for genuinely multi-part decisions), Consequences as a handful of concrete effects.
+- **An ADR records the decision, not the design.** API specifications, diagrams, and step-by-step migration plans belong in the project's design documents or issues — link them from the ADR as supplementary pointers. The record must still stand alone if every link dies: links carry design detail, never the decision or its why. If the project has no home for design material, ask the user where it should live; keep the record itself scannable regardless.
+- **Write self-contained statements.** A future reader cannot resolve "as discussed in Slack" or "per yesterday's meeting" — restate the substance in the record itself, with absolute dates.
+- **Do not pad.** No boilerplate openers ("This document describes…"), no restating the template's bracketed prompts, no repeating Context inside Consequences.
+
 ### Writing a strong Context section
 
 Describe the problem, not the solution. Explain the forces — what is pulling the team toward a decision? Technical constraints, business deadlines, team expertise, existing infrastructure, scale requirements. A good Context section lets a reader who joins the project two years later understand why the decision was necessary. Avoid vague statements like "we needed a better approach" — name the specific pain or requirement.
 
 ### Writing a strong Decision section
 
-State the decision in active voice: "We will adopt PostgreSQL for the event store." Not "PostgreSQL was chosen." For complex decisions, use `###` subsections to address distinct aspects — e.g., one subsection for the technology choice, another for the migration strategy, another for the rollback plan.
+State the decision in active voice: "We will adopt PostgreSQL for the event store." Not "PostgreSQL was chosen." For complex decisions, use `###` subsections to address distinct aspects of the decision — e.g., one subsection for the technology choice, another for the compatibility commitment it makes. Do not use subsections to inline design material such as migration steps or rollback runbooks — that belongs in a linked design document (see "Length and tone").
 
 ### Writing strong Consequences
 
@@ -121,6 +128,7 @@ These details must appear in the plan itself — do not assume the executing age
 - Don't edit an accepted ADR's Context, Decision, or Consequences — supersede or deprecate instead.
 - Don't create ADRs for trivial implementation details — reserve them for decisions that constrain future work.
 - Don't bundle unrelated decisions into one ADR — split them.
+- Don't inline the design into the record — an ADR that needs diagrams and API tables is a design doc wearing an ADR's filename; link the design material instead.
 - Don't write vague Context sections ("we needed something better") — name specific forces, constraints, and trade-offs.
 - Don't omit negative consequences — every decision has trade-offs; a one-sided Consequences section is dishonest.
 - Don't skip numbering or reuse numbers — the sequence is the timeline.
