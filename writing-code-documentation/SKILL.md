@@ -7,6 +7,8 @@ description: Conventions on writing code documentation for public APIs. Always u
 
 Every public API gets documented in the language's mandated documentation format. Documentation describes the service a unit of code provides to its callers — not how it works internally.
 
+**Precedence:** These conventions apply in full to new code and to user-approved migrations toward them. Where the existing codebase demonstrably follows different conventions, match those for changes within existing structures and surface the tension to the user — never mass-refactor toward these conventions uninvited. Identical copies of this rule live in each convention skill; if they diverge, the copy in `writing-organism-oriented-code` wins.
+
 ## 1. Documentation Segments
 
 Documentation consists of up to four ordered segments.

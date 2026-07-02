@@ -7,6 +7,8 @@ description: Conventions on practicing classical test-driven development — red
 
 Tests are design pressure, not verification. Every failing test is a conversation with the object about to be built — about what it should do, how it should be called, and what it should refuse. TDD is how organisms earn their shape.
 
+**Precedence:** These conventions apply in full to new code and to user-approved migrations toward them. Where the existing codebase demonstrably follows different conventions, match those for changes within existing structures and surface the tension to the user — never mass-refactor toward these conventions uninvited. Identical copies of this rule live in each convention skill; if they diverge, the copy in `writing-organism-oriented-code` wins.
+
 ## 1. The Cycle
 
 Red, Green, Refactor — in that order, every time.

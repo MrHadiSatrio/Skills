@@ -7,6 +7,8 @@ description: Conventions on writing code that reads like English prose. Use when
 
 Code is read far more than it is written. Every method body is a paragraph, every variable name is a noun or predicate, every call site is a sentence. Write code that a domain expert can read aloud and understand without deciphering technical notation.
 
+**Precedence:** These conventions apply in full to new code and to user-approved migrations toward them. Where the existing codebase demonstrably follows different conventions, match those for changes within existing structures and surface the tension to the user — never mass-refactor toward these conventions uninvited. Identical copies of this rule live in each convention skill; if they diverge, the copy in `writing-organism-oriented-code` wins.
+
 ## 1. Method Bodies as Narratives
 
 A method body tells a story from top to bottom. Each statement is a sentence; each block is a paragraph. A reader should follow the logic without backtracking.

@@ -7,6 +7,8 @@ description: Conventions on working with Git repositories. Always use when creat
 
 A repository's history is its autobiography. Every commit, branch, and tag tells a story — what changed, why, and where. Favor many small, well-narrated steps over few large leaps.
 
+**Precedence:** These conventions apply in full to new code and to user-approved migrations toward them. Where the existing codebase demonstrably follows different conventions, match those for changes within existing structures and surface the tension to the user — never mass-refactor toward these conventions uninvited. Identical copies of this rule live in each convention skill; if they diverge, the copy in `writing-organism-oriented-code` wins.
+
 ## 1. Commits
 
 Granular commits. Each commit represents one small, coherent change — a single idea describable in one sentence. A commit touching more than a handful of files is the exception, not the norm. When a task involves multiple steps, commit after each step rather than bundling everything into one commit.

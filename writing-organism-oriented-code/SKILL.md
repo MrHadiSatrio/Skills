@@ -7,6 +7,8 @@ description: Conventions on writing Organism-Oriented Programming. Use when writ
 
 Objects are alive. They are autonomous organisms that own their behavior, interact through focused contracts, and grow through composition — not inheritance, not annotation magic, not manager classes.
 
+**Precedence:** These conventions apply in full to new code and to user-approved migrations toward them. Where the existing codebase demonstrably follows different conventions, match those for changes within existing structures and surface the tension to the user — never mass-refactor toward these conventions uninvited. Identical copies of this rule live in each convention skill; if they diverge, this copy wins.
+
 ## 1. Object Design
 
 - **Objects own behavior** — no anemic models. A domain object is never a data bag manipulated by external "service" logic; it encapsulates the rules that govern it.
