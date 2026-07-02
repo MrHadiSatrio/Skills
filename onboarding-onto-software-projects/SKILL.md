@@ -19,6 +19,8 @@ ls .claude/skills/ 2>/dev/null
 ls .claude/commands/ 2>/dev/null
 ```
 
+If `.claude/skills` exists, first check whether it is a Git submodule (`git submodule status` lists it) rather than project-local skills — a submodule means the global AgentSkills repository is already wired in and step 2 should be skipped; only genuinely project-local skills count as prior onboarding artifacts here.
+
 If an existing `CLAUDE.md` or project-local skills are found, use **AskUserQuestion** to confirm intent:
 
 ```
@@ -91,6 +93,12 @@ questions:
       - label: "No, skip for now"
         description: "You can always add it manually later"
 ```
+
+Make sure the user weighs the trade-offs before answering:
+
+- **Duplication** — users who also have these skills globally (`~/.claude/skills`) will see every skill twice, and both copies can trigger.
+- **Irrelevant skills come along** — the repository includes non-engineering skills (e.g., `endurance-coaching`) whose triggers then apply inside this project.
+- **The submodule pins a commit** — the project's copy goes stale as upstream evolves; it needs a periodic `git submodule update --remote <path>`.
 
 **If yes:**
 
