@@ -227,13 +227,13 @@ Read these files as needed during plan creation:
 
 | File                                 | When to Read                | Contents                                     |
 | ------------------------------------ | --------------------------- | -------------------------------------------- |
-| `skill/reference/queries.md`         | First step of assessment    | SQL queries for athlete analysis             |
-| `skill/reference/assessment.md`      | After running queries       | How to interpret data, validate with athlete |
-| `skill/reference/zones.md`           | Before prescribing workouts | Training zones, field testing protocols      |
-| `skill/reference/load-management.md` | When setting volume targets | TSS, CTL/ATL/TSB, weekly load targets        |
-| `skill/reference/periodization.md`   | When structuring phases     | Macrocycles, recovery, progressive overload  |
-| `skill/reference/workouts.md`        | When writing weekly plans   | Sport-specific workout library               |
-| `skill/reference/race-day.md`        | Final section of plan       | Pacing strategy, nutrition                   |
+| `reference/queries.md`         | First step of assessment    | SQL queries for athlete analysis             |
+| `reference/assessment.md`      | After running queries       | How to interpret data, validate with athlete |
+| `reference/zones.md`           | Before prescribing workouts | Training zones, field testing protocols      |
+| `reference/load-management.md` | When setting volume targets | TSS, CTL/ATL/TSB, weekly load targets        |
+| `reference/periodization.md`   | When structuring phases     | Macrocycles, recovery, progressive overload  |
+| `reference/workouts.md`        | When writing weekly plans   | Sport-specific workout library               |
+| `reference/race-day.md`        | Final section of plan       | Pacing strategy, nutrition                   |
 
 ---
 
@@ -249,14 +249,14 @@ Read these files as needed during plan creation:
 
 **If using Strava:**
 
-1. Read `skill/reference/queries.md` and run the assessment queries
-2. Read `skill/reference/assessment.md` to interpret the results
+1. Read `reference/queries.md` and run the assessment queries
+2. Read `reference/assessment.md` to interpret the results
 
 **If using manual data:**
 
 1. Ask the questions outlined in "Option B: Manual Data Entry" above
 2. Build the assessment object from their responses
-3. Read `skill/reference/assessment.md` for context on interpreting fitness levels
+3. Read `reference/assessment.md` for context on interpreting fitness levels
 
 ### Phase 2: Athlete Validation
 
@@ -266,18 +266,18 @@ Read these files as needed during plan creation:
 
 ### Phase 3: Zone & Load Setup
 
-6. Read `skill/reference/zones.md` to establish training zones
-7. Read `skill/reference/load-management.md` for TSS/CTL targets
+6. Read `reference/zones.md` to establish training zones
+7. Read `reference/load-management.md` for TSS/CTL targets
 
 ### Phase 4: Plan Design
 
-8. Read `skill/reference/periodization.md` for phase structure
-9. Read `skill/reference/workouts.md` to build weekly sessions
+8. Read `reference/periodization.md` for phase structure
+9. Read `reference/workouts.md` to build weekly sessions
 10. Calculate weeks until event, design phases
 
 ### Phase 5: Plan Delivery
 
-11. Read `skill/reference/race-day.md` for race execution section
+11. Read `reference/race-day.md` for race execution section
 12. Write the plan as JSON, then render to HTML (see output format below)
 
 ---
