@@ -1,6 +1,6 @@
 ---
 name: working-with-opentelemetry-specifications
-description: OpenTelemetry specification expertise for auditing, building, and reviewing OTel-adjacent projects. Use when working with OpenTelemetry SDKs, instrumentation libraries, collectors, exporters, or any project that implements or integrates with OpenTelemetry APIs.
+description: OpenTelemetry specification expertise for auditing, building, and reviewing OTel-adjacent projects. Use when the task concerns OpenTelemetry compliance, instrumentation design, or implementing/reviewing SDKs, collectors, or exporters — not merely because the project uses OpenTelemetry.
 ---
 
 # Working with OpenTelemetry Specifications

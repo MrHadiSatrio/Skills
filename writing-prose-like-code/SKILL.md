@@ -1,6 +1,6 @@
 ---
 name: writing-prose-like-code
-description: Conventions on writing code that reads like English prose. Use when writing or modifying code in object-oriented codebases and/or languages.
+description: Conventions on writing code that reads like English prose. Use when writing new code, or when refactoring code toward these conventions, in object-oriented codebases and/or languages.
 ---
 
 # Writing Prose-Like Code

@@ -1,6 +1,6 @@
 ---
 name: practicing-test-driven-development
-description: Conventions on practicing classical test-driven development — red-green-refactor, inside-out from value types, and tests as design pressure. Use when writing or modifying code in object-oriented codebases and/or languages.
+description: Conventions on practicing classical test-driven development — red-green-refactor, inside-out from value types, and tests as design pressure. Use when writing new behavior-bearing code, or when changing behavior in existing code, in object-oriented codebases and/or languages.
 ---
 
 # Practicing Test-Driven Development

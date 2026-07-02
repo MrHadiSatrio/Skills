@@ -1,6 +1,6 @@
 ---
 name: working-with-adr-tracking-projects
-description: Conventions on working with Architecture Decision Records (ADRs). Use when working on projects that track architecture decisions through ADRs, or when making architectural decisions that should be recorded.
+description: Conventions on working with Architecture Decision Records (ADRs). Use when working on projects that already track architecture decisions through ADRs, or when the user asks to record an architectural decision.
 ---
 
 # Working with ADR-Tracking Projects

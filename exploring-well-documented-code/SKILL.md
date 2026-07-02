@@ -1,6 +1,6 @@
 ---
 name: exploring-well-documented-code
-description: Token-efficient codebase exploration through type definitions, signatures, and documentation only. Use only when explicitly triggered by the user.
+description: Token-efficient codebase exploration through type definitions, signatures, and documentation only. Use only when explicitly triggered by the user, or when directed by another skill.
 ---
 
 # Exploring Well-Documented Code

@@ -1,6 +1,6 @@
 ---
 name: writing-organism-oriented-code
-description: Conventions on writing Organism-Oriented Programming. Use when writing or modifying code in object-oriented codebases and/or languages.
+description: Conventions on writing Organism-Oriented Programming. Use when writing new code, or when refactoring code toward these conventions, in object-oriented codebases and/or languages.
 ---
 
 # Organism-Oriented Programming

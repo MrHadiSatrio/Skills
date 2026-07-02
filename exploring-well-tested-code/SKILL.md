@@ -1,6 +1,6 @@
 ---
 name: exploring-well-tested-code
-description: Token-efficient codebase exploration through test files — test names as behavioral catalogs, test setup as construction patterns, and fakes as contract documentation. Use only when explicitly triggered by the user.
+description: Token-efficient codebase exploration through test files — test names as behavioral catalogs, test setup as construction patterns, and fakes as contract documentation. Use only when explicitly triggered by the user, or when directed by another skill.
 ---
 
 # Exploring Well-Tested Code
