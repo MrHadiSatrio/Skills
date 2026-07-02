@@ -13,7 +13,7 @@ Before creating or referencing ADRs, locate where they live:
 
 1. Check for a `.adr-dir` file at the project root — it contains the ADR directory path (e.g., `doc/adr`).
 2. If no `.adr-dir` exists, check for `doc/adr/` directly.
-3. If neither exists, the project does not use ADRs yet. To bootstrap: create `doc/adr/`, create a `.adr-dir` file at the project root containing `doc/adr`, and write ADR 0001 ("Record architecture decisions") as the first entry.
+3. If neither exists, the project does not use ADRs yet. Do not bootstrap uninvited — ask the user first (via AskUserQuestion where available, in plain text otherwise). With their approval: create `doc/adr/`, create a `.adr-dir` file at the project root containing `doc/adr`, and write ADR 0001 ("Record architecture decisions") as the first entry.
 
 List existing ADRs by reading the directory — there is no index file. The filenames are the table of contents. Read them in numeric order to follow the decision timeline.
 
@@ -81,7 +81,7 @@ Be honest. Every decision has trade-offs. List what becomes easier and what beco
 
 ## 4. Superseding and Deprecating
 
-ADRs are immutable records. Do not edit an accepted ADR to change its decision. Instead:
+ADRs are immutable records once accepted. A `Proposed` ADR is still a draft — edit it freely until it is accepted. Do not edit an accepted ADR to change its decision. Instead:
 
 **Superseding** — when a new decision replaces an old one:
 
