@@ -34,18 +34,7 @@ A short code example showing how to obtain the service described. Skip if usage 
 - Omit a tag entirely when the signature already says it all — a `@param moment the moment` line is noise, not documentation.
 - Prefer annotations that document behaviour over metadata annotations: `@since` is rarely useful (callers shouldn't need to know when something was added) and `@author` is noise in a version-controlled codebase — skip both unless the project explicitly requires them.
 
-## 2. What NOT to Do
-
-- Don't restate the declared name — "This class is a...", "This method does...", "A CompletionEvent that..."
-- Don't use filler phrases — "This is used to...", "A helper that...", "Responsible for..."
-- Don't document private/internal APIs unless their complexity warrants it
-- Don't write implementation details (how) — write caller-facing contracts (what)
-- Don't force optional segments — skip nuance if the brief is enough, skip usage if trivial
-- Don't write multi-paragraph annotation tags — one line each
-- Don't use `@author` (redundant with version control) or `@since` (callers shouldn't need release history) unless the project explicitly mandates them
-- Don't document getters/properties unless semantics are non-obvious
-
-## 3. Examples
+## 2. Examples
 
 ### Types
 
@@ -96,7 +85,7 @@ Bad:
 fun save(moment: Moment): Moment
 ```
 
-## 4. Language Format Reference
+## 3. Language Format Reference
 
 | Language        | Format             | Common annotation tags                                          |
 |-----------------|--------------------|-----------------------------------------------------------------|
@@ -107,4 +96,15 @@ fun save(moment: Moment): Moment
 | Rust            | `///`              | Inline prose sections: `# Errors`, `# Panics`, `# Examples`     |
 | Swift           | `///`              | `- Parameter`, `- Returns`, `- Throws`, `- Note`, `- Warning`   |
 | Go              | `//`               | Inline prose, `Deprecated:` prefix                              |
+
+## 4. What NOT to Do
+
+- Don't restate the declared name — "This class is a...", "This method does...", "A CompletionEvent that..."
+- Don't use filler phrases — "This is used to...", "A helper that...", "Responsible for..."
+- Don't document private/internal APIs unless their complexity warrants it
+- Don't write implementation details (how) — write caller-facing contracts (what)
+- Don't force optional segments — skip nuance if the brief is enough, skip usage if trivial
+- Don't write multi-paragraph annotation tags — one line each
+- Don't use `@author` (redundant with version control) or `@since` (callers shouldn't need release history) unless the project explicitly mandates them
+- Don't document getters/properties unless semantics are non-obvious
 
