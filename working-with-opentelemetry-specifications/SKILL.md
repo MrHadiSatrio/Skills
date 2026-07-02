@@ -50,6 +50,7 @@ Before relying on the reference content:
    - Do NOT attempt to diff individual files or map changes to reference sections — this risks context bloat on large changesets
    - Ask whether to proceed with the current reference files or halt for re-distillation
    - If the user chooses to proceed, continue normally but note the caveat in any findings
+   - If the user chooses re-distillation, follow the procedure in `reference/maintenance.md`
 
 ## 3. Workflows
 
