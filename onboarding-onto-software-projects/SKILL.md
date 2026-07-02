@@ -250,7 +250,11 @@ questions:
 For each skill the user wants to add:
 
 1. Ask the user to describe the workflow: what triggers it, what steps it involves, what it produces.
-2. Invoke the `skill-creator` skill via the Skill tool.
+2. Load the `authoring-agent-skills` skill via the Skill tool and follow its conventions to write the skill. If it is unavailable, fall back to this inline procedure:
+   - Create `.claude/skills/<kebab-case-name>/SKILL.md`.
+   - Frontmatter: `name` matching the directory name exactly, and a `description` stating what the skill does, then when to use it.
+   - Body: a one-paragraph purpose statement, numbered step-by-step sections with exact commands (not descriptions), and a final "What NOT to Do" section.
+   - Follow every path and command in the draft literally to confirm it resolves before moving on.
 3. After the skill is created, use **AskUserQuestion** to ask if there are more:
 
 ```
