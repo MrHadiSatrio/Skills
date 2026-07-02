@@ -17,7 +17,15 @@ Before creating or referencing ADRs, locate where they live:
 
 List existing ADRs by reading the directory — there is no index file. The filenames are the table of contents. Read them in numeric order to follow the decision timeline.
 
-## 2. ADR Format
+## 2. ADRs as Constraints
+
+Most sessions in an ADR-tracking project read records rather than write them. Accepted ADRs are binding constraints, not background reading:
+
+- **Consult before designing.** Before changing anything plausibly governed by a recorded decision — storage, protocols, module boundaries, cross-cutting concerns — scan the ADR filenames for relevant records and read those in full.
+- **The conflict procedure.** If the intended change contradicts an accepted ADR: stop. Either conform the design to the record, or propose supersedure to the user with the changed circumstances. Never silently contradict a live record; never privately judge a record stale.
+- **Cite what governed you.** When an accepted ADR shaped the work, cite it by number in the plan, PR description, or commit body ("per ADR 0007").
+
+## 3. ADR Format
 
 New practice bootstraps with Michael Nygard's original format, and projects already on it stay on it. In a project whose existing records follow another convention — MADR, adr-tools ordering, a bespoke template — match the existing records: consistency within the trail beats conformance to this template, and never reformat existing records.
 
@@ -64,7 +72,7 @@ does it force?]
 
 ADR 0001 is always "Record architecture decisions" — the decision to use ADRs. It bootstraps the practice and serves as a template for all subsequent entries.
 
-## 3. Creating New ADRs
+## 4. Creating New ADRs
 
 ### Is this decision ADR-worthy?
 
@@ -104,7 +112,7 @@ State the decision in active voice: "We will adopt PostgreSQL for the event stor
 
 Be honest. Every decision has trade-offs. List what becomes easier and what becomes harder. Name the new constraints. Identify follow-up decisions that this one forces. A Consequences section that lists only benefits is incomplete — it makes future readers distrust the record.
 
-## 4. Superseding and Deprecating
+## 5. Superseding and Deprecating
 
 ADRs are immutable records once accepted. A `Proposed` ADR is still a draft — edit it freely until it is accepted. Do not edit an accepted ADR to change its decision. Instead:
 
@@ -129,7 +137,7 @@ Links go in both directions, and every link target is a bare same-directory file
 
 These are the only permitted edits to an accepted ADR. The Context, Decision, and Consequences sections remain untouched — they are the historical record.
 
-## 5. Planning
+## 6. Planning
 
 When writing an implementation plan that involves architectural choices, include ADR creation as explicit steps:
 
@@ -139,9 +147,10 @@ When writing an implementation plan that involves architectural choices, include
 
 These details must appear in the plan itself — do not assume the executing agent has access to this skill's conventions.
 
-## 6. What NOT to Do
+## 7. What NOT to Do
 
 - Don't edit an accepted ADR's Context, Decision, or Consequences — supersede or deprecate instead.
+- Don't write code that contradicts an accepted ADR — conform, or propose supersedure first.
 - Don't create ADRs for trivial implementation details — reserve them for decisions that constrain future work.
 - Don't bundle unrelated decisions into one ADR — split them.
 - Don't inline the design into the record — an ADR that needs diagrams and API tables is a design doc wearing an ADR's filename; link the design material instead.
