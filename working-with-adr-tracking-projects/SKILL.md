@@ -23,6 +23,7 @@ Most sessions in an ADR-tracking project read records rather than write them. Ac
 
 - **Consult before designing.** Before changing anything plausibly governed by a recorded decision — storage, protocols, module boundaries, cross-cutting concerns — scan the ADR filenames for relevant records and read those in full.
 - **The conflict procedure.** If the intended change contradicts an accepted ADR: stop. Either conform the design to the record, or propose supersedure to the user with the changed circumstances. Never silently contradict a live record; never privately judge a record stale.
+- **Conflict is measured against the rule, not the snapshot.** Records mix binding decisions with descriptions of the design as it stood ("there are two X"). Growth that the decision's rule quantifies over is conformance, even where it falsifies such a snapshot — apply the conflict procedure only when the change disobeys the rule. A Decision-section snapshot that has actually misled a reader is a defect in the record: flag it to the user for re-issue (see "Superseding and Deprecating") rather than treating it as binding or silently outgrowing it.
 - **Cite what governed you.** When an accepted ADR shaped the work, cite it by number in the plan, PR description, or commit body ("per ADR 0007").
 
 ## 3. ADR Format
@@ -108,6 +109,11 @@ Describe the problem, not the solution. Explain the forces — what is pulling t
 
 State the decision in active voice: "We will adopt PostgreSQL for the event store." Not "PostgreSQL was chosen." For complex decisions, use `###` subsections to address distinct aspects of the decision — e.g., one subsection for the technology choice, another for the compatibility commitment it makes. Do not use subsections to inline design material such as migration steps or rollback runbooks — that belongs in a linked design document (see "Length and tone").
 
+State the rule, not the census. A decision quantifies over its cases, present and future; an enumeration of the instances that exist today is a design snapshot, and design snapshots in a Decision section rot — conforming growth falsifies them, and future readers mistake the count for a constraint. The test: if a new instance that obeys the rule would make the sentence false, the sentence is a census — restate it as the rule, or move the inventory to Context as an illustration. Enumerate only when the set is itself the decision — a closed classification, a load-bearing order — where adding a member genuinely requires a new decision.
+
+- Good: "Every event consumer subscribes through the message bus."
+- Bad: "There are two event consumers — the audit service and the billing service — each subscribing through the message bus."
+
 ### Writing strong Consequences
 
 Be honest. Every decision has trade-offs. List what becomes easier and what becomes harder. Name the new constraints. Identify follow-up decisions that this one forces. A Consequences section that lists only benefits is incomplete — it makes future readers distrust the record.
@@ -117,6 +123,8 @@ Be honest. Every decision has trade-offs. List what becomes easier and what beco
 ADRs are immutable records once accepted. A `Proposed` ADR is still a draft — edit it freely until it is accepted. Do not edit an accepted ADR to change its decision. Instead:
 
 **When does a new decision supersede an old one?** Supersede only when following the old record would now be wrong. If the old and the new decision can both be obeyed simultaneously, the new ADR stands alone — reference the old one in its Context if they are related, but leave its status untouched.
+
+**Re-issue is the one supersedure whose decision is unchanged.** A record whose *framing* misleads even though its decision still stands — e.g., a Decision section whose census of then-existing instances has been read as a normative inventory — may be re-issued through the same supersedure mechanics (the IETF obsolete-and-restate model). The replacing record restates the same decision at rule altitude, and its Context must say explicitly that the decision is unchanged and what in the old framing warranted the re-issue, so the `Superseded` status is not read as a reversal. Reserve this for records that have demonstrably misled a reader; imperfect prose alone does not justify trail churn.
 
 **Superseding** — when a new decision replaces an old one:
 
@@ -144,7 +152,7 @@ A worked pair ships with this skill: `reference/0002-store-events-in-postgresql.
 When writing an implementation plan that involves architectural choices, include ADR creation as explicit steps:
 
 - **Identify which decisions qualify** — technology selections, protocol choices, data model designs, integration patterns, and any decision that constrains future work. Not every implementation detail is an architectural decision.
-- **Specify the ADR** — include the proposed title, a brief sketch of the Context and Decision content, and the filename. The executing agent should not have to determine whether an ADR is needed or what to write in it.
+- **Specify the ADR** — include the proposed title, a brief sketch of the Context and Decision content, and the filename; sketch the Decision as the rule it imposes, not an inventory of current instances. The executing agent should not have to determine whether an ADR is needed or what to write in it.
 - **Sequence the ADR before the implementation** — the ADR captures the decision; the code implements it. Write the record first, then build.
 
 These details must appear in the plan itself — do not assume the executing agent has access to this skill's conventions.
@@ -155,7 +163,7 @@ These details must appear in the plan itself — do not assume the executing age
 - Don't write code that contradicts an accepted ADR — conform, or propose supersedure first.
 - Don't create ADRs for trivial implementation details — reserve them for decisions that constrain future work.
 - Don't bundle unrelated decisions into one ADR — split them.
-- Don't inline the design into the record — an ADR that needs diagrams and API tables is a design doc wearing an ADR's filename; link the design material instead.
+- Don't inline the design into the record — an ADR that needs diagrams and API tables is a design doc wearing an ADR's filename; link the design material instead.- Don't enumerate the current instances of what the decision governs in the Decision section ("there are two X") — a census is falsified by conforming growth and gets misread as a normative inventory. Enumerate only sets that are themselves the decision (a closed classification, a load-bearing order).
 - Don't write vague Context sections ("we needed something better") — name specific forces, constraints, and trade-offs.
 - Don't omit negative consequences — every decision has trade-offs; a one-sided Consequences section is dishonest.
 - Don't skip numbering or reuse numbers — the sequence is the timeline.
