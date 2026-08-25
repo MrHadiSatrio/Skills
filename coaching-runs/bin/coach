@@ -85,10 +85,22 @@ cmd_status() {
     -f "$JQ_DIR/status.jq" plan.json
 }
 
+cmd_verify() {
+  require_workspace
+  verify_findings=$(jq -r --argjson journal "$(journal_array)" \
+    -f "$JQ_DIR/verify.jq" plan.json)
+  if [ -n "$verify_findings" ]; then
+    echo "$verify_findings"
+    exit 1
+  fi
+  echo OK
+}
+
 cmd=${1:-}
-[ -n "$cmd" ] || die 'usage: coach <status> [args]' 2
+[ -n "$cmd" ] || die 'usage: coach <status|verify> [args]' 2
 shift
 case $cmd in
   status) cmd_status "$@" ;;
+  verify) cmd_verify "$@" ;;
   *) die "unknown command: $cmd" 2 ;;
 esac

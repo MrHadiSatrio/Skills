@@ -103,6 +103,79 @@ rm "$TMP/ws/plan.json"
 check 'status refuses to run outside a coaching workspace' \
   2 'not a coaching workspace' status 2030-01-16
 
+# write_journal <path> <date> <day> <workout> <km>
+write_journal() {
+  cat > "$1" <<EOF
+---
+date: $2
+day: $3
+workout: $4
+activity: 10000009
+distanceKm: $5
+durationMin: 45.0
+backfilled: false
+---
+
+# $3
+
+Synthetic entry written by a test.
+EOF
+}
+
+# --- verify ---------------------------------------------------------------
+
+fresh
+check 'verify accepts a consistent workspace' 0 'OK' verify
+
+fresh
+check 'verify accepts week 0 with its partial days' 0 'OK' verify
+
+fresh
+check 'verify tolerates a colon inside a front matter value' 0 'OK' verify
+
+fresh
+check 'verify tolerates a backfilled entry without an activity id' 0 'OK' verify
+
+fresh
+rm "$TMP/ws/journal/2030-01-07-w1d1.md"
+check 'verify reports a completed day without a journal file' \
+  1 'marked complete but has no journal file' verify
+
+fresh
+write_journal "$TMP/ws/journal/2030-01-16-w2d2.md" 2030-01-16 W2D2 w2-thu 7.3
+check 'verify reports a journal file without a completed day' \
+  1 'not marked complete in plan.json' verify
+
+fresh
+cp "$TMP/ws/journal/2030-01-14-w2d1.md" "$TMP/ws/journal/2030-01-14-w2d1b.md"
+check 'verify reports two journal files for one date' \
+  1 'two journal files for 2030-01-14' verify
+
+fresh
+sed 's/^date: 2030-01-14$/date: 2030-01-15/' \
+  "$TMP/ws/journal/2030-01-14-w2d1.md" > "$TMP/ws/journal/2030-01-14-w2d1.md.new"
+mv "$TMP/ws/journal/2030-01-14-w2d1.md.new" "$TMP/ws/journal/2030-01-14-w2d1.md"
+check 'verify reports a journal date that disagrees with its filename' \
+  1 'disagrees with the filename' verify
+
+fresh
+printf '%s\n' '# W2D2' 'No front matter here.' \
+  > "$TMP/ws/journal/2030-01-14-w2d1.md"
+check 'verify reports front matter that awk cannot parse' \
+  1 'front matter does not parse' verify
+
+fresh
+jq '(.weeks[2].summary.actualKm) = 99' \
+  "$TMP/ws/plan.json" > "$TMP/ws/plan.json.new" && mv "$TMP/ws/plan.json.new" "$TMP/ws/plan.json"
+check 'verify reports a week total that disagrees with its journal records' \
+  1 'disagrees with the journal sum' verify
+
+fresh
+jq '(.weeks[2].days[2].workouts[0].distanceKm) = 20' \
+  "$TMP/ws/plan.json" > "$TMP/ws/plan.json.new" && mv "$TMP/ws/plan.json.new" "$TMP/ws/plan.json"
+check 'verify reports a next long run that breaks the spike rule' \
+  1 'breaks the spike rule' verify
+
 # --- summary --------------------------------------------------------------
 
 echo "passed: $passes, failed: $failures"
