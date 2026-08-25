@@ -96,11 +96,66 @@ cmd_verify() {
   echo OK
 }
 
+cmd_close_day() {
+  require_workspace
+  cd_amend=0
+  cd_date=''
+  for cd_arg in "$@"; do
+    case $cd_arg in
+      --amend) cd_amend=1 ;;
+      *) cd_date=$cd_arg ;;
+    esac
+  done
+  [ -n "$cd_date" ] || die 'usage: coach close-day [--amend] <date>' 2
+
+  cd_file=''
+  cd_count=0
+  for cd_f in "journal/$cd_date"-*.md; do
+    [ -f "$cd_f" ] || continue
+    cd_file=$cd_f
+    cd_count=$((cd_count + 1))
+  done
+  [ "$cd_count" -ge 1 ] || die "no journal file for $cd_date under journal/"
+  [ "$cd_count" -eq 1 ] || die "two journal files for $cd_date; keep one"
+
+  cd_fmdate=$(fm_json "$cd_file" | jq -r '.date // empty')
+  [ "$cd_fmdate" = "$cd_date" ] || \
+    die "$cd_file carries date '$cd_fmdate', not $cd_date"
+
+  jq -e --arg d "$cd_date" 'any(.weeks[].days[]?; .date == $d)' \
+    plan.json >/dev/null || die "no planned day on $cd_date"
+
+  cd_closed=$(jq -r --arg d "$cd_date" \
+    '[.weeks[].days[]? | select(.date == $d) | .workouts[]?
+      | select(.sport == "run") | .completed == true] | any' plan.json)
+  if [ "$cd_closed" = "true" ] && [ "$cd_amend" -eq 0 ]; then
+    die "$cd_date is already closed; pass --amend to recompute it"
+  fi
+
+  cd_tmp=plan.json.tmp.$$
+  if ! jq \
+      --arg date "$cd_date" \
+      --arg path "$cd_file" \
+      --arg now "$(date -u '+%Y-%m-%dT%H:%M:%SZ')" \
+      --argjson journal "$(journal_array)" \
+      -f "$JQ_DIR/close-day.jq" plan.json > "$cd_tmp" 2>/dev/null; then
+    rm -f "$cd_tmp"
+    die "close-day failed; plan.json is untouched"
+  fi
+  if ! jq -e '.weeks and .meta.updatedAt' "$cd_tmp" >/dev/null 2>&1; then
+    rm -f "$cd_tmp"
+    die "validation failed; plan.json is untouched"
+  fi
+  mv "$cd_tmp" plan.json
+  echo "closed $cd_date via $cd_file"
+}
+
 cmd=${1:-}
-[ -n "$cmd" ] || die 'usage: coach <status|verify> [args]' 2
+[ -n "$cmd" ] || die 'usage: coach <status|verify|close-day> [args]' 2
 shift
 case $cmd in
   status) cmd_status "$@" ;;
   verify) cmd_verify "$@" ;;
+  close-day) cmd_close_day "$@" ;;
   *) die "unknown command: $cmd" 2 ;;
 esac

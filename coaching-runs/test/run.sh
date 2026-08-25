@@ -176,6 +176,70 @@ jq '(.weeks[2].days[2].workouts[0].distanceKm) = 20' \
 check 'verify reports a next long run that breaks the spike rule' \
   1 'breaks the spike rule' verify
 
+# --- close-day ------------------------------------------------------------
+
+fresh
+write_journal "$TMP/ws/journal/2030-01-16-w2d2.md" 2030-01-16 W2D2 w2-thu 7.3
+if run_coach 0 close-day 2030-01-16 \
+   && jq -e '.weeks[2].days[1].workouts[0].completed == true
+             and .weeks[2].days[1].journal == "journal/2030-01-16-w2d2.md"' \
+        "$TMP/ws/plan.json" >/dev/null; then
+  ok
+else
+  ko 'close-day marks the day complete and points it at the journal file'
+fi
+
+fresh
+write_journal "$TMP/ws/journal/2030-01-16-w2d2.md" 2030-01-16 W2D2 w2-thu 7.3
+if run_coach 0 close-day 2030-01-16 \
+   && jq -e '.weeks[2].summary.actualKm == 12.2
+             and .weeks[2].summary.actualSessions == 2' \
+        "$TMP/ws/plan.json" >/dev/null; then
+  ok
+else
+  ko "close-day recomputes the week's actual totals from the journal"
+fi
+
+fresh
+write_journal "$TMP/ws/journal/2030-01-16-w2d2.md" 2030-01-16 W2D2 w2-thu 7.3
+if run_coach 0 close-day 2030-01-16 \
+   && jq -e '.meta.updatedAt != "2030-01-14T00:00:00Z"' \
+        "$TMP/ws/plan.json" >/dev/null; then
+  ok
+else
+  ko 'close-day bumps updatedAt'
+fi
+
+fresh
+check 'close-day refuses a date that has no journal file' \
+  1 'no journal file for 2030-01-16' close-day 2030-01-16
+
+fresh
+check 'close-day refuses a day that is already closed' \
+  1 'already closed' close-day 2030-01-14
+
+fresh
+jq '(.weeks[2].summary.actualKm) = 99' \
+  "$TMP/ws/plan.json" > "$TMP/ws/plan.json.new" && mv "$TMP/ws/plan.json.new" "$TMP/ws/plan.json"
+if run_coach 0 close-day --amend 2030-01-14 \
+   && jq -e '.weeks[2].summary.actualKm == 4.9' \
+        "$TMP/ws/plan.json" >/dev/null; then
+  ok
+else
+  ko 'close-day --amend recomputes a closed day'
+fi
+
+fresh
+write_journal "$TMP/ws/journal/2030-01-16-w2d2.md" 2030-01-16 W2D2 w2-thu not-a-number
+before=$(cksum < "$TMP/ws/plan.json")
+if run_coach 1 close-day 2030-01-16 \
+   && echo "$out" | grep -q 'untouched' \
+   && [ "$(cksum < "$TMP/ws/plan.json")" = "$before" ]; then
+  ok
+else
+  ko 'close-day leaves plan.json untouched when validation fails'
+fi
+
 # --- summary --------------------------------------------------------------
 
 echo "passed: $passes, failed: $failures"
