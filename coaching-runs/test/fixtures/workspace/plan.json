@@ -1,0 +1,169 @@
+{
+  "version": "2.0",
+  "meta": {
+    "id": "fixture-plan",
+    "athlete": "Test Athlete",
+    "updatedAt": "2030-01-14T00:00:00Z"
+  },
+  "preferences": {
+    "run": "kilometers",
+    "firstDayOfWeek": "monday",
+    "runDays": ["Tuesday", "Thursday", "Saturday"]
+  },
+  "guardrails": {
+    "spikeRatioMax": 1.10,
+    "longRunTimeCapHours": 3
+  },
+  "weeks": [
+    {
+      "weekNumber": 0,
+      "cycleWeek": null,
+      "phase": "Transition",
+      "startDate": "2030-01-01",
+      "endDate": "2030-01-05",
+      "targetKm": 5,
+      "days": [
+        {
+          "date": "2030-01-03",
+          "dayOfWeek": "Thursday",
+          "journal": "journal/2030-01-03-w0d1.md",
+          "workouts": [
+            {
+              "id": "w0-thu",
+              "sport": "run",
+              "type": "easy",
+              "name": "Easy 5km Z2",
+              "description": "Fully conversational.",
+              "distanceKm": 5,
+              "primaryZone": "Zone 2",
+              "completed": true
+            }
+          ]
+        }
+      ],
+      "summary": { "actualKm": 5.0, "actualSessions": 1 }
+    },
+    {
+      "weekNumber": 1,
+      "cycleWeek": "A",
+      "phase": "Base",
+      "startDate": "2030-01-06",
+      "endDate": "2030-01-12",
+      "targetKm": 29,
+      "days": [
+        {
+          "date": "2030-01-07",
+          "dayOfWeek": "Tuesday",
+          "journal": "journal/2030-01-07-w1d1.md",
+          "workouts": [
+            {
+              "id": "w1-tue",
+              "sport": "run",
+              "type": "tempo",
+              "name": "Tempo 20min Z3",
+              "description": "10min warm-up, 20min relaxed Z3, 5min cool-down.",
+              "distanceKm": 5,
+              "primaryZone": "Zone 3",
+              "completed": true
+            }
+          ]
+        },
+        {
+          "date": "2030-01-09",
+          "dayOfWeek": "Thursday",
+          "journal": "journal/2030-01-09-w1d2.md",
+          "workouts": [
+            {
+              "id": "w1-thu",
+              "sport": "run",
+              "type": "easy",
+              "name": "Easy 8km Z2",
+              "description": "Fully conversational.",
+              "distanceKm": 8,
+              "primaryZone": "Zone 2",
+              "completed": true
+            }
+          ]
+        },
+        {
+          "date": "2030-01-11",
+          "dayOfWeek": "Saturday",
+          "journal": "journal/2030-01-11-w1d3.md",
+          "workouts": [
+            {
+              "id": "w1-sat",
+              "sport": "run",
+              "type": "long",
+              "name": "Long Run 16km Z2",
+              "description": "Open conservative, walk breaks from 10km.",
+              "distanceKm": 16,
+              "primaryZone": "Zone 2",
+              "completed": true
+            }
+          ]
+        }
+      ],
+      "summary": { "actualKm": 29.6, "actualSessions": 3 }
+    },
+    {
+      "weekNumber": 2,
+      "cycleWeek": "B",
+      "phase": "Base",
+      "startDate": "2030-01-13",
+      "endDate": "2030-01-19",
+      "targetKm": 29,
+      "days": [
+        {
+          "date": "2030-01-14",
+          "dayOfWeek": "Tuesday",
+          "journal": "journal/2030-01-14-w2d1.md",
+          "workouts": [
+            {
+              "id": "w2-tue",
+              "sport": "run",
+              "type": "tempo",
+              "name": "Tempo 20min Z3",
+              "description": "10min warm-up, 20min relaxed Z3, 5min cool-down.",
+              "distanceKm": 5,
+              "primaryZone": "Zone 3",
+              "completed": true
+            }
+          ]
+        },
+        {
+          "date": "2030-01-16",
+          "dayOfWeek": "Thursday",
+          "workouts": [
+            {
+              "id": "w2-thu",
+              "sport": "run",
+              "type": "easy",
+              "name": "Easy 7km Z2",
+              "description": "Fully conversational.",
+              "distanceKm": 7,
+              "primaryZone": "Zone 2",
+              "completed": false
+            }
+          ]
+        },
+        {
+          "date": "2030-01-18",
+          "dayOfWeek": "Saturday",
+          "workouts": [
+            {
+              "id": "w2-sat",
+              "sport": "run",
+              "type": "long",
+              "name": "Long Run 17km Z2",
+              "description": "Open conservative, walk breaks from 10km.",
+              "distanceKm": 17,
+              "primaryZone": "Zone 2",
+              "completed": false
+            }
+          ]
+        }
+      ],
+      "summary": { "actualKm": 4.9, "actualSessions": 1 }
+    }
+  ]
+}

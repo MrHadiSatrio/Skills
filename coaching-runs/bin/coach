@@ -1,0 +1,94 @@
+#!/bin/sh
+# coach — deterministic reads and writes for a run-coaching workspace.
+# Run it from the workspace directory. The workspace must hold plan.json.
+# Invoke as: sh <skill-root>/bin/coach <command> [args]
+
+set -eu
+
+SELF=$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd)
+JQ_DIR=$SELF/../jq
+
+die() {
+  echo "coach: $1" >&2
+  exit "${2:-1}"
+}
+
+require_workspace() {
+  [ -f plan.json ] || die "not a coaching workspace: plan.json not found in $(pwd)" 2
+}
+
+# Print the front matter of a journal file as one JSON object.
+# Scalar values stay strings. Repeated "carry" items become an array.
+# The parser reads only the first --- block, splits each line on its
+# first colon, and strips one pair of surrounding quotes from list items.
+fm_json() {
+  awk '
+    /^---[ ]*$/ { fence += 1; next }
+    fence != 1 { next }
+    /^[A-Za-z][A-Za-z0-9]*:/ {
+      key = $0; sub(/:.*$/, "", key)
+      val = $0; sub(/^[^:]*:[ ]*/, "", val)
+      list = ""
+      if (val == "") { list = key; next }
+      printf "%s\t%s\n", key, val
+      next
+    }
+    /^[ ]+-[ ]/ {
+      if (list != "") {
+        item = $0
+        sub(/^[ ]+-[ ]/, "", item)
+        sub(/^"/, "", item); sub(/"$/, "", item)
+        printf "%s\t%s\n", list, item
+      }
+      next
+    }
+  ' "$1" | jq -R -s '
+    [ split("\n")[] | select(length > 0)
+      | index("\t") as $i | {key: .[:$i], value: .[$i+1:]} ]
+    | (map(select(.key != "carry")) | from_entries)
+      + {carry: [.[] | select(.key == "carry") | .value]}
+  '
+}
+
+# Print every journal entry as a JSON array of front-matter objects,
+# each with a "file" key carrying its path.
+journal_array() {
+  {
+    if [ -d journal ]; then
+      for jf in journal/*.md; do
+        [ -f "$jf" ] || continue
+        fm_json "$jf" | jq --arg file "$jf" '. + {file: $file}'
+      done
+    fi
+  } | jq -s '.'
+}
+
+# Print the open-ruling titles from rulings.md as a JSON array.
+open_rulings() {
+  {
+    if [ -f rulings.md ]; then
+      awk '
+        /^## /  { open = ($0 == "## Open"); next }
+        open && /^### / { sub(/^### /, ""); print }
+      ' rulings.md
+    fi
+  } | jq -R -s '[split("\n")[] | select(length > 0)]'
+}
+
+cmd_status() {
+  require_workspace
+  status_date=${1:-$(date '+%Y-%m-%d')}
+  jq -r \
+    --arg today "$status_date" \
+    --argjson journal "$(journal_array)" \
+    --argjson rulings "$(open_rulings)" \
+    -f "$JQ_DIR/status.jq" plan.json
+}
+
+cmd=${1:-}
+[ -n "$cmd" ] || die 'usage: coach <status> [args]' 2
+shift
+case $cmd in
+  status) cmd_status "$@" ;;
+  *) die "unknown command: $cmd" 2 ;;
+esac
