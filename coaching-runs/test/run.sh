@@ -264,6 +264,21 @@ else
   ko 'stops sums the stopped time and counts the stops'
 fi
 
+# --- artifact-check -------------------------------------------------------
+
+fresh
+if run_coach 0 artifact-check "$ROOT/fixtures/fit-locked.json" \
+   && echo "$out" | grep -q 'LOCKED' \
+   && echo "$out" | grep -q 'avg power 90W'; then
+  ok
+else
+  ko 'artifact-check flags an HR ramp that locks onto cadence at easy power'
+fi
+
+fresh
+check 'artifact-check passes a hard finish with power to match' \
+  0 'look genuine' artifact-check "$ROOT/fixtures/fit-clean.json"
+
 # --- summary --------------------------------------------------------------
 
 echo "passed: $passes, failed: $failures"

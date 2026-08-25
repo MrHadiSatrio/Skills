@@ -160,13 +160,22 @@ cmd_stops() {
     -f "$JQ_DIR/stops.jq" "$stops_file"
 }
 
+cmd_artifact_check() {
+  ac_file=${1:-}
+  [ -n "$ac_file" ] || die 'usage: coach artifact-check <fit-records-json>' 2
+  [ -f "$ac_file" ] || die "no such file: $ac_file"
+  jq -r -f "$JQ_DIR/artifact-check.jq" "$ac_file"
+}
+
 cmd=${1:-}
-[ -n "$cmd" ] || die 'usage: coach <status|verify|close-day|stops> [args]' 2
+[ -n "$cmd" ] || \
+  die 'usage: coach <status|verify|close-day|stops|artifact-check> [args]' 2
 shift
 case $cmd in
   status) cmd_status "$@" ;;
   verify) cmd_verify "$@" ;;
   close-day) cmd_close_day "$@" ;;
   stops) cmd_stops "$@" ;;
+  artifact-check) cmd_artifact_check "$@" ;;
   *) die "unknown command: $cmd" 2 ;;
 esac
