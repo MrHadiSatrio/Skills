@@ -240,6 +240,30 @@ else
   ko 'close-day leaves plan.json untouched when validation fails'
 fi
 
+# --- stops ----------------------------------------------------------------
+
+fresh
+check 'stops finds a stop at a wall-clock gap of 20 seconds or more' \
+  0 '25s' stops "$ROOT/fixtures/typed-splits.json"
+
+fresh
+if run_coach 0 stops "$ROOT/fixtures/typed-splits.json" \
+   && ! echo "$out" | grep -q ' 12s' \
+   && ! echo "$out" | grep -q ' 8s'; then
+  ok
+else
+  ko 'stops ignores a gap under 20 seconds'
+fi
+
+fresh
+if run_coach 0 stops "$ROOT/fixtures/typed-splits.json" \
+   && echo "$out" | grep -q 'total: 2 segments' \
+   && echo "$out" | grep -q '70s not in motion'; then
+  ok
+else
+  ko 'stops sums the stopped time and counts the stops'
+fi
+
 # --- summary --------------------------------------------------------------
 
 echo "passed: $passes, failed: $failures"

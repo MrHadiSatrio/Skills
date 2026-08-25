@@ -150,12 +150,23 @@ cmd_close_day() {
   echo "closed $cd_date via $cd_file"
 }
 
+cmd_stops() {
+  stops_file=${1:-}
+  [ -n "$stops_file" ] || \
+    die 'usage: coach stops <typed-splits-json> [threshold-seconds]' 2
+  [ -f "$stops_file" ] || die "no such file: $stops_file"
+  stops_threshold=${2:-20}
+  jq -r --argjson threshold "$stops_threshold" \
+    -f "$JQ_DIR/stops.jq" "$stops_file"
+}
+
 cmd=${1:-}
-[ -n "$cmd" ] || die 'usage: coach <status|verify|close-day> [args]' 2
+[ -n "$cmd" ] || die 'usage: coach <status|verify|close-day|stops> [args]' 2
 shift
 case $cmd in
   status) cmd_status "$@" ;;
   verify) cmd_verify "$@" ;;
   close-day) cmd_close_day "$@" ;;
+  stops) cmd_stops "$@" ;;
   *) die "unknown command: $cmd" 2 ;;
 esac
