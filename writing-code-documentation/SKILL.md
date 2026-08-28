@@ -188,4 +188,9 @@ fun save(moment: Moment): Moment
 - Don't write multi-paragraph annotation tags — one line each
 - Don't use `@author` (redundant with version control) or `@since` (callers shouldn't need release history) unless the project explicitly mandates them
 - Don't document getters/properties unless semantics are non-obvious
+- Don't document `companion object`s — the members carry their own briefs
+- Don't put a class-level brief on a test suite — the test names are the catalog
+- Don't write "This class does not know..." or "does not care about..." — a brief names what the unit does, never what it omits
+- Don't describe a collaborator's mechanism or a far-away component's behavior — name the contract and stop (see Scope of a Brief)
+- Don't keep a sentence that survives only by charity — apply the deletion test (see Register)
 
