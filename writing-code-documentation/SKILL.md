@@ -64,7 +64,36 @@ Good:
  */
 ```
 
-## 3. Examples
+## 3. Scope of a Brief
+
+A brief describes the unit it sits on, and nothing beyond it.
+
+- **The brief states the "what" alone.** Every "why" moves inline, as a comment at the exact code it explains (see Inline Comments), or falls to the deletion test.
+- **A type documents its own responsibility, never a collaborator's mechanism.** `"Ended if and only if [PersistedSession] reads it as ended"` names the contract and stops. How `PersistedSession` reaches that verdict is `PersistedSession`'s brief.
+- **No references to far-away components.** A brief must not describe the behavior of another module's serializer or the platform's handler chain — such references drift as those components change. Exception: a `@see` tag that points at the component without describing it.
+- **No usage-context narrative.** Where a type is created, who typically calls it, and what the caller does next belong to the caller's code, not the type's brief. The usage snippet segment shows *how to obtain* the service — it does not narrate a scenario.
+- **Do not assume what a caller sees or wants.** "Caller's perspective" means naming the service the caller receives, not speculating about the caller's situation: `"Returns the visit that is open"`, not `"Returns the visit the caller is probably interested in"`.
+- **A contract or vocabulary names meaning, not implementation.** A configuration type's brief names no telemetry name or storage detail. A key or constant catalog narrates only the semantic each entry conveys — no SDK behavior, no export path, no platform binding such as "one screen instance is one Activity". Those bindings belong to the code that uses the entries.
+
+Bad:
+
+```kotlin
+/**
+ * A [Drain] for ended sessions. It does not know how sessions end; the
+ * serializer in the export module writes each session under the `session`
+ * name, and the host's handler chain reads it back on the next launch.
+ */
+```
+
+Good:
+
+```kotlin
+/**
+ * A [Drain] for sessions that [PersistedSession] reads as ended.
+ */
+```
+
+## 4. Examples
 
 ### Types
 
@@ -115,7 +144,7 @@ Bad:
 fun save(moment: Moment): Moment
 ```
 
-## 4. Language Format Reference
+## 5. Language Format Reference
 
 | Language        | Format             | Common annotation tags                                          |
 |-----------------|--------------------|-----------------------------------------------------------------|
@@ -127,7 +156,7 @@ fun save(moment: Moment): Moment
 | Swift           | `///`              | `- Parameter`, `- Returns`, `- Throws`, `- Note`, `- Warning`   |
 | Go              | `//`               | Inline prose, `Deprecated:` prefix                              |
 
-## 5. What NOT to Do
+## 6. What NOT to Do
 
 - Don't restate the declared name — "This class is a...", "This method does...", "A CompletionEvent that..."
 - Don't use filler phrases — "This is used to...", "A helper that...", "Responsible for..."
