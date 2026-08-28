@@ -93,7 +93,29 @@ Good:
  */
 ```
 
-## 4. Examples
+## 4. Inline Comments
+
+An inline comment carries a "why" that the code cannot. The "what" and the "how" are the code's own job — rename until the code says them itself (`writing-prose-like-code` owns that rule; if these diverge, its "What NOT to Do" wins).
+
+- **Comment the "why" at the exact line.** The reason for an oddity sits directly above the code that is odd, not in the class brief and not in the commit body.
+- **Answer every reviewer's "Why?" in the code.** Either make the reason visible at the line with a comment, or remove the need for the oddity. Never answer only in the review thread.
+- **No comment where the code already shows it.** A private constant needs no doc block, and a map entry needs no line above it, when the name and the value say it all. Exception: a value taken from an external source (a spec, a vendor limit) gets a one-line comment naming that source.
+
+Bad:
+
+```kotlin
+// Set the timeout to 30 seconds.
+val timeout = 30.seconds
+```
+
+Good:
+
+```kotlin
+// The vendor drops idle sockets at 35 seconds; stay under it.
+val timeout = 30.seconds
+```
+
+## 5. Examples
 
 ### Types
 
@@ -144,7 +166,7 @@ Bad:
 fun save(moment: Moment): Moment
 ```
 
-## 5. Language Format Reference
+## 6. Language Format Reference
 
 | Language        | Format             | Common annotation tags                                          |
 |-----------------|--------------------|-----------------------------------------------------------------|
@@ -156,7 +178,7 @@ fun save(moment: Moment): Moment
 | Swift           | `///`              | `- Parameter`, `- Returns`, `- Throws`, `- Note`, `- Warning`   |
 | Go              | `//`               | Inline prose, `Deprecated:` prefix                              |
 
-## 6. What NOT to Do
+## 7. What NOT to Do
 
 - Don't restate the declared name — "This class is a...", "This method does...", "A CompletionEvent that..."
 - Don't use filler phrases — "This is used to...", "A helper that...", "Responsible for..."
