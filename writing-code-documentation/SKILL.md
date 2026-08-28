@@ -34,7 +34,37 @@ A short code example showing how to obtain the service described. Skip if usage 
 - Omit a tag entirely when the signature already says it all — a `@param moment the moment` line is noise, not documentation.
 - Prefer annotations that document behaviour over metadata annotations: `@since` is rarely useful (callers shouldn't need to know when something was added) and `@author` is noise in a version-controlled codebase — skip both unless the project explicitly requires them.
 
-## 2. Examples
+## 2. Register
+
+Documentation is two or three very short sentences that carry only the essence. A reader understands each sentence on the first pass, without holding an earlier clause in mind.
+
+- **The deletion test.** For every sentence and paragraph, delete it. If callers lose no important understanding, it was filler — leave it out. Apply the test to the brief, the nuance extension, and every tag line.
+- **One fact per sentence.** Split a sentence that carries a condition, an example, and a consequence into separate sentences, or drop the parts that fail the deletion test.
+- **Name outcomes, not mechanisms.** State what happens under each condition, not which callback or branch produces it.
+- **Name the general concept, not one medium's form** — "telemetry name" when the rule covers span names and event names alike, not "span name". Exception: when the API genuinely handles only one form, name that form.
+
+Bad (rejected as very hard to understand):
+
+```kotlin
+/**
+ * The orphan-end case is the only drop that this platform reports through
+ * Analytics. This case occurs when onActivityStopped runs for an Activity
+ * whose matching onActivityStarted this platform never observed, for
+ * example because the visit start faulted earlier. Every other fault is
+ * swallowed without a report.
+ */
+```
+
+Good:
+
+```kotlin
+/**
+ * The platform reports one drop through [Analytics]: a stop with no
+ * matching start. Every other fault stays silent.
+ */
+```
+
+## 3. Examples
 
 ### Types
 
@@ -85,7 +115,7 @@ Bad:
 fun save(moment: Moment): Moment
 ```
 
-## 3. Language Format Reference
+## 4. Language Format Reference
 
 | Language        | Format             | Common annotation tags                                          |
 |-----------------|--------------------|-----------------------------------------------------------------|
@@ -97,7 +127,7 @@ fun save(moment: Moment): Moment
 | Swift           | `///`              | `- Parameter`, `- Returns`, `- Throws`, `- Note`, `- Warning`   |
 | Go              | `//`               | Inline prose, `Deprecated:` prefix                              |
 
-## 4. What NOT to Do
+## 5. What NOT to Do
 
 - Don't restate the declared name — "This class is a...", "This method does...", "A CompletionEvent that..."
 - Don't use filler phrases — "This is used to...", "A helper that...", "Responsible for..."
