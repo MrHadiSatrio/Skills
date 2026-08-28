@@ -14,6 +14,7 @@
 - `GetTracer(name, version?, schema_url?, attributes?) -> Tracer`
   - MUST return working Tracer as fallback (not null, not exception) even for null/empty name; SHOULD log warning
   - Implementations MUST NOT require users to repeatedly obtain Tracer with same identity to pick up config changes
+- Implementations of `TracerProvider` SHOULD allow creating an arbitrary number of `TracerProvider` instances
 - Global: `SetTracerProvider(provider)`, `GetTracerProvider() -> TracerProvider`
 
 #### Tracer
@@ -22,7 +23,7 @@
   - MUST NOT accept Span or SpanContext as parent — only full Context
   - Span creation MUST NOT set newly created Span as active in current Context by default
   - All Spans MUST be created via Tracer — MUST NOT be any other API for creating Spans
-- `Enabled() -> bool` (SHOULD support) — returns false when disabled
+- `Enabled() -> bool` (Stable as of NEW commit; no longer marked Development) — "a `Tracer` SHOULD provide this `Enabled` API"; "the API MUST be structured in a way for parameters to be added"; "This API MUST return a language idiomatic boolean type"; returned value is not static and instrumentation SHOULD be documented to call it on each use
 
 #### Span
 
@@ -34,7 +35,7 @@
 - `IsRemote` — bool; MUST be true when extracted via Propagators; MUST be false for child spans
 - `IsValid` — true if TraceId != 0 AND SpanId != 0
 - Hex form: TraceId MUST be 32-hex lowercase string; SpanId MUST be 16-hex lowercase string
-- All TraceState mutations MUST return new TraceState; input MUST be validated; MUST NOT return invalid data
+- TraceState: API MUST provide get / add / update / delete of key-value pairs; "All mutating operations MUST return a new `TraceState`"; input MUST be validated; MUST NOT return invalid data
 
 **SpanKind:**
 | Kind | Description |
@@ -94,6 +95,13 @@
 - If config updated (e.g., adding SpanProcessor), MUST apply to all already-returned Tracers
 - `Shutdown()` — MUST be called only once; subsequent Tracer gets return no-op; MUST invoke Shutdown on all SpanProcessors
 - `ForceFlush()` — MUST invoke ForceFlush on all registered SpanProcessors
+- `TracerConfigurator` / `TracerConfig.enabled` [Development] — disables a Tracer by scope
+
+#### Tracer Enabled (SDK)
+
+- "`Enabled` MUST return `false` when either: there are no registered `SpanProcessors`, [Development] `Tracer` is disabled (`TracerConfig.enabled` is `false`)."
+- "Otherwise, it SHOULD return `true`. It MAY return `false` to support additional optimizations and features."
+- The no-processors clause is Stable at NEW; only the `TracerConfig` clause remains Development
 
 #### Sampling
 
@@ -129,6 +137,10 @@
 | `AlwaysOff` | `always_off` | Always DROP; Description: "AlwaysOffSampler" |
 | `TraceIdRatioBased(ratio)` | `traceidratio` | Deterministic hash of TraceId; Description: "TraceIdRatioBased{RATIO}" |
 | `ParentBased(root, ...)` | `parentbased_always_on` etc. | Delegates to sub-sampler based on parent context |
+| `ProbabilitySampler(ratio)` [Development] | — | W3C Level 2 56-bit consistent sampling: "MUST ignore the parent `SampledFlag`"; keep when `R >= T`; on keep, TraceState SHOULD include `th:T`; ratio range `2^-56` to 1.0 |
+| `JaegerRemoteSampler` | — | Periodically loads sampling config from a Jaeger backend |
+| `AlwaysRecord(root)` (Stable at NEW; was Development) | — | Decorator: "MUST behave as follows": DROP → RECORD_ONLY; RECORD_ONLY → RECORD_ONLY; RECORD_AND_SAMPLE → RECORD_AND_SAMPLE |
+| `CompositeSampler(ComposableSampler)` [Development] | — | See below |
 
 **ParentBased delegates:**
 | Parent | IsRemote | IsSampled | Delegate |
@@ -145,6 +157,10 @@
 
 **TraceIdRatioBased:** MUST be deterministic (same TraceId always same decision, independent of language/time). MUST also sample all traces that lower-ratio sampler would sample.
 
+**CompositeSampler / ComposableSampler [Development]** (Tier 2): `CompositeSampler` implements `Sampler` and delegates to a `ComposableSampler.GetSamplingIntent(...)`, which takes all `ShouldSample` parameters except `traceId` and returns a `SamplingIntent` of `threshold`, `adjusted_count_reliable` (renamed from `threshold_reliable` at NEW), `attributes_provider`, `trace_state_provider`. NEW spells out the decision procedure: a `null` threshold means `DROP`; otherwise R is read from TraceState/TraceId when `adjusted_count_reliable` is true, or freshly generated as a 56-bit random value when false; the decision compares threshold with R per the tracestate-probability-sampling decision algorithm; on a positive decision with `adjusted_count_reliable` true the `ot` `th` value is set to the threshold, otherwise `th` is removed. "ComposableSamplers MUST NOT modify the OpenTelemetry TraceState (i.e., the `ot` sub-key of TraceState)"; "explicit randomness values MUST not be modified". Built-ins: `ComposableAlwaysOn` (threshold 0, reliable true), `ComposableAlwaysOff` (no threshold, reliable false), `ComposableProbability(ratio)`, `ComposableParentThreshold(root)`, `ComposableRuleBased`, `ComposableAnnotating`.
+
+**Sampling randomness [Development]:** for root contexts the SDK SHOULD generate TraceIds meeting W3C Level 2 randomness and SHOULD set the `Random` trace flag; "SDKs and Samplers MUST NOT overwrite explicit randomness in an OpenTelemetry TraceState value"; root samplers MAY insert an `rv` value when the Random flag is unset and `rv` is absent.
+
 #### Span Limits
 
 | Config | Env var | Default |
@@ -156,8 +172,15 @@
 | AttributePerEventCountLimit | `OTEL_EVENT_ATTRIBUTE_COUNT_LIMIT` | 128 |
 | AttributePerLinkCountLimit | `OTEL_LINK_ATTRIBUTE_COUNT_LIMIT` | 128 |
 
+- Span attributes MUST adhere to the common attribute-limit rules (`common/README.md#attribute-limits`); the Java `SpanLimits` example now also lists `getAttributeValueDepthLimit()` (no trace-specific env var given in sdk.md)
 - If SDK implements limits, MUST provide way to change programmatically
 - Discard message MUST be logged at most once per Span (not per discarded item)
+
+#### IdGenerator
+
+- SDK MUST by default randomly generate both TraceId and SpanId (crypto-secure)
+- SDK MUST provide mechanism for customizing ID generation
+- "Additional `IdGenerator` implementing vendor-specific protocols such as AWS X-Ray trace ID generator MUST NOT be maintained or distributed as part of the OpenTelemetry Core packages" (`overview.md#core-packages`)
 
 #### SpanProcessor
 
@@ -196,11 +219,9 @@
 
 **Default SDK processors SHOULD NOT implement retry logic** — that's the exporter's responsibility.
 
-#### IdGenerator
+#### Self-observability [Development] (new at NEW)
 
-- SDK MUST by default randomly generate both TraceId and SpanId (crypto-secure)
-- SDK MUST provide mechanism for customizing ID generation
-- Custom IdGenerators implementing vendor-specific protocols MUST NOT be in Core OTel repos
+- "The Tracing SDK SHOULD support SDK self-observability" (`self-observability.md`)
 
 ---
 
@@ -220,7 +241,22 @@
 ### 5.4 Exception Recording
 [Source: trace/exceptions.md]
 
-- Exception SHOULD be recorded as Event when it remains unhandled when span ends and causes ERROR status
-- Event name MUST be `"exception"`
-- Recommended attributes: `exception.type`, `exception.message`, `exception.stacktrace`
+- "An exception SHOULD be recorded as an `Event` on the span during which it occurred if and only if it remains unhandled when the span ends and causes the span status to be set to ERROR."
+- "The name of the event MUST be `"exception"`."
+- Recommended attributes: `exception.type`, `exception.message`, `exception.stacktrace`; [Development] cross-signal error reporting defers to semantic-conventions docs/general/recording-errors.md (semantic-conventions repository, not the spec)
 - `RecordException()` MUST record as event with conventions from exceptions semantic conventions
+
+### 5.5 OpenTelemetry TraceState Handling
+[Source: trace/tracestate-handling.md]
+
+- OTel values in W3C `tracestate` "MUST all be contained in a single entry using the `ot` key", value = `;`-separated `key:value` list (e.g. `ot=th:c;rv:...`)
+- "The complete list length MUST NOT exceed 256 characters"; "the used keys MUST be unique"
+- "Instrumentation libraries and clients MUST NOT use this entry, and they MUST instead use their own entry"
+- Sub-keys "MUST be defined as part of the Specification"; set values "MUST be either updated or added to the `ot` entry"
+- `th` (sampling threshold): 1-14 lowercase hex digits, right-padded with zeros to 14 digits = 56-bit rejection threshold; `th:0` = 100% sampling; `Probability = (2^56 - Threshold) / 2^56`; `AdjustedCount = 2^56 / (2^56 - Threshold)`; e.g. `th:c` = 25%
+- `rv` (explicit randomness): "MUST be exactly 14 lower-case hexadecimal digits"; "SHOULD NOT be erased from the OpenTelemetry TraceState or modified once associated with a new TraceID"
+
+### 5.6 TraceState Probability Sampling [Development]
+[Source: trace/tracestate-probability-sampling.md]
+
+Consistent probability sampling compares a 56-bit randomness value `R` (the `rv` sub-key, else the least-significant 56 bits of a W3C Level 2 random TraceId) against a 56-bit rejection threshold `T = (1 - probability) * 2^56`: "If `R` >= `T`, keep the span, else drop the span"; both values "MUST be present". Stages that change the effective threshold must re-encode `th`; stages with unknown probability (including parent-based samplers without a parent threshold) must erase `th`; a propagated `rv` must be carried unchanged. The file also gives the threshold-precision algorithm (4 hex digits recommended by default), the 1-in-N threshold table, and threshold-to-probability / adjusted-count conversions.
