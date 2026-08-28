@@ -17,7 +17,7 @@ Documentation consists of up to four ordered segments.
 
 What service the code provides to callers. Max two lines. Written from the caller's perspective, answering "what do I get from this?"
 
-For **types** (classes, interfaces, objects), open with an identity phrase — a noun describing what the type *is*: `"An [Event] signalling..."`, `"A repository for..."`. For **callables** (functions, methods), open with a verb describing what the caller *gets*: `"Persists a..."`, `"Returns the..."`.
+For **types** (classes, interfaces, objects), open with an identity phrase — a noun describing what the type *is*: `"An [Event] signalling..."`, `"A repository for..."`. When the type implements or extends a named super, the identity phrase names that super: `"An [Activity] that..."`, `"A [BroadcastReceiver] for..."`. When the identity phrase alone says enough, the brief ends there — do not force a second sentence. For **callables** (functions, methods), open with a verb describing what the caller *gets*: `"Persists a..."`, `"Returns the..."`.
 
 ### Nuance Extension (optional)
 
