@@ -33,6 +33,7 @@ Hadi's personal collection of agent skills for Claude — engineering convention
 | `onboarding-onto-software-projects` | Guided onboarding: explore, write CLAUDE.md, define project skills. |
 | `refactoring-legacy-code` | Strangler-style migration of a codebase toward the conventions. |
 | `authoring-agent-skills` | How to write skills for this repository — start here for any new skill. |
+| `consolidating-memory` | A consolidation pass over auto-memory: gather what the user said from recent transcripts, merge it into the one-fact-per-file memory, prune, and re-index. Ships the `archivist` CLI. |
 
 ### Other
 
