@@ -20,11 +20,12 @@ SECONDS_PER_DAY=86400
 pass() { passes=$((passes + 1)); }
 fail() { failures=$((failures + 1)); echo "FAIL: $1"; }
 
-# Reset the temporary configuration directory, the working directory, and
-# the transcripts directory from the fixtures.
+# Reset the temporary configuration directory, the working directory,
+# the memory directory, and the transcripts directory from the fixtures.
 fresh() {
-  rm -rf "$TEMPORARY/configuration" "$TEMPORARY/workspace" "$TEMPORARY/transcripts"
+  rm -rf "$TEMPORARY/configuration" "$TEMPORARY/workspace" "$TEMPORARY/memory" "$TEMPORARY/transcripts"
   mkdir -p "$TEMPORARY/configuration" "$TEMPORARY/workspace"
+  cp -R "$ROOT/fixtures/memory" "$TEMPORARY/memory"
   cp -R "$ROOT/fixtures/transcripts" "$TEMPORARY/transcripts"
 }
 
@@ -249,6 +250,148 @@ mkdir -p "$TEMPORARY/empty"
 TRANSCRIPTS=$TEMPORARY/empty
 expect 'signals says so when the directory holds no transcript' \
   2 'No transcript sits under' signals
+
+# --- check ----------------------------------------------------------------
+
+# write_memory <path> <name> <type>
+write_memory() {
+  cat > "$1" <<EOF
+---
+name: $2
+description: A synthetic memory written by a test
+metadata:
+  type: $3
+---
+
+Synthetic content.
+EOF
+}
+
+# The fixture index holds four pointer lines. Headings are permitted
+# lines, so they pad the index past a limit without another defect.
+FIXTURE_INDEX_LINES=4
+INDEX_LINE_LIMIT=200
+INDEX_BYTE_LIMIT=25600
+
+fresh
+MEMORY=$TEMPORARY/memory; TRANSCRIPTS=''
+expect 'check accepts a consistent memory directory' 0 '^OK$' check
+
+fresh
+rm "$TEMPORARY/memory/widget-api-migration.md"
+expect 'check reports an index line that points at a missing file' \
+  1 'MEMORY.md line 3 points at widget-api-migration.md, which does not exist.' check
+
+fresh
+write_memory "$TEMPORARY/memory/stray-fact.md" stray-fact project
+expect 'check reports a memory file without an index line' \
+  1 'stray-fact.md has no line in MEMORY.md.' check
+
+fresh
+echo 'Jordan likes dark themes.' >> "$TEMPORARY/memory/MEMORY.md"
+expect 'check reports memory content written into the index' \
+  1 'MEMORY.md line 5 is not a pointer line: "Jordan likes dark themes."' check
+
+fresh
+{ echo '# Memory'; echo; cat "$TEMPORARY/memory/MEMORY.md"; } > "$TEMPORARY/memory/MEMORY.md.new"
+mv "$TEMPORARY/memory/MEMORY.md.new" "$TEMPORARY/memory/MEMORY.md"
+expect 'check permits headings and blank lines in the index' 0 '^OK$' check
+
+fresh
+first_line=$(sed -n 1p "$TEMPORARY/memory/MEMORY.md")
+echo "$first_line" >> "$TEMPORARY/memory/MEMORY.md"
+expect 'check reports a file that the index points at twice' \
+  1 'MEMORY.md line 5 points at jordan-editor-preferences.md twice.' check
+
+fresh
+echo 'Jordan said this last week.' >> "$TEMPORARY/memory/jordan-editor-preferences.md"
+expect 'check reports a relative date in a memory file' \
+  1 'jordan-editor-preferences.md line 11 has a relative date: "Jordan said this last week."' check
+
+fresh
+echo 'On 2030-01-05 Jordan said: do it tomorrow.' >> "$TEMPORARY/memory/jordan-editor-preferences.md"
+expect 'check permits a relative word next to an absolute date' 0 '^OK$' check
+
+fresh
+sed 's/on 2030-01-12;/yesterday;/' "$TEMPORARY/memory/MEMORY.md" > "$TEMPORARY/memory/MEMORY.md.new"
+mv "$TEMPORARY/memory/MEMORY.md.new" "$TEMPORARY/memory/MEMORY.md"
+expect 'check reports a relative date in an index hook' \
+  1 'MEMORY.md line 3 has a relative date' check
+
+fresh
+sed 's/^name: jordan-editor-preferences$/name: editor-preferences/' \
+  "$TEMPORARY/memory/jordan-editor-preferences.md" > "$TEMPORARY/memory/jordan-editor-preferences.md.new"
+mv "$TEMPORARY/memory/jordan-editor-preferences.md.new" "$TEMPORARY/memory/jordan-editor-preferences.md"
+expect 'check reports a name that disagrees with the filename' \
+  1 'jordan-editor-preferences.md declares name "editor-preferences", not its own filename.' check
+
+fresh
+sed '/^description:/d' "$TEMPORARY/memory/neverthrow-documentation.md" > "$TEMPORARY/memory/neverthrow-documentation.md.new"
+mv "$TEMPORARY/memory/neverthrow-documentation.md.new" "$TEMPORARY/memory/neverthrow-documentation.md"
+expect 'check reports a missing description' \
+  1 'neverthrow-documentation.md declares no description.' check
+
+fresh
+sed 's/^  type: user$/  type: note/' \
+  "$TEMPORARY/memory/jordan-editor-preferences.md" > "$TEMPORARY/memory/jordan-editor-preferences.md.new"
+mv "$TEMPORARY/memory/jordan-editor-preferences.md.new" "$TEMPORARY/memory/jordan-editor-preferences.md"
+expect 'check reports a type outside user, feedback, project, and reference' \
+  1 'jordan-editor-preferences.md declares type "note", not one of user, feedback, project, reference.' check
+
+fresh
+printf '%s\n' 'Jordan likes dark themes.' > "$TEMPORARY/memory/jordan-editor-preferences.md"
+expect 'check reports a file without a frontmatter block' \
+  1 'jordan-editor-preferences.md does not open with a frontmatter block.' check
+
+fresh
+printf '%s\n' '---' 'name: jordan-editor-preferences' 'Jordan likes dark themes.' \
+  > "$TEMPORARY/memory/jordan-editor-preferences.md"
+expect 'check reports an unclosed frontmatter block' \
+  1 'jordan-editor-preferences.md has no complete frontmatter block.' check
+
+fresh
+echo 'See [[jordan-testing-habits]].' >> "$TEMPORARY/memory/jordan-editor-preferences.md"
+if run_archivist 0 check \
+   && echo "$output" | grep -q 'WARN: jordan-editor-preferences.md links to \[\[jordan-testing-habits\]\], which has no file yet.' \
+   && echo "$output" | grep -q '^OK$'; then
+  pass
+else
+  fail 'check warns about a link without a file, and still accepts the directory'
+fi
+
+fresh
+headings_written=0
+while [ "$headings_written" -lt $((INDEX_LINE_LIMIT + 1 - FIXTURE_INDEX_LINES)) ]; do
+  echo '#'
+  headings_written=$((headings_written + 1))
+done >> "$TEMPORARY/memory/MEMORY.md"
+expect 'check reports an index over 200 lines' \
+  1 "MEMORY.md has $((INDEX_LINE_LIMIT + 1)) lines; Claude loads the first $INDEX_LINE_LIMIT only." check
+
+fresh
+{
+  printf '# '
+  bytes_written=0
+  while [ "$bytes_written" -le "$INDEX_BYTE_LIMIT" ]; do
+    printf 'xxxxxxxxxx'
+    bytes_written=$((bytes_written + 10))
+  done
+  echo
+} >> "$TEMPORARY/memory/MEMORY.md"
+expect 'check reports an index over 25600 bytes' \
+  1 "bytes; Claude loads the first $INDEX_BYTE_LIMIT only." check
+
+fresh
+rm "$TEMPORARY/memory/MEMORY.md"
+expect 'check reports a missing index' 1 'MEMORY.md is missing.' check
+
+fresh
+expect 'check refuses extra arguments' 2 'usage: archivist check' check --memory somewhere
+
+fresh
+MEMORY=$TEMPORARY/nowhere
+expect 'check refuses to run without a memory directory' \
+  2 'No memory directory exists' check
 
 # --- summary --------------------------------------------------------------
 
