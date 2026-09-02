@@ -1,0 +1,2 @@
+{"type":"user","timestamp":"2030-01-04T18:00:00.000Z","cwd":"/Users/jordan/site","sessionId":"bbbbbbbb-0000-4000-8000-000000000002","message":{"role":"user","content":"Let's go with main as the default branch."}}
+{"type":"assistant","timestamp":"2030-01-04T18:00:04.000Z","cwd":"/Users/jordan/site","sessionId":"bbbbbbbb-0000-4000-8000-000000000002","message":{"role":"assistant","content":[{"type":"text","text":"Switching the default branch to main."}]}}

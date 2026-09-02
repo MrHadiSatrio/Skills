@@ -16,6 +16,12 @@
 
 set -eu
 
+SELF=$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd)
+PROGRAMS=$SELF/../jq
+
+DEFAULT_WINDOW_DAYS=7
+SECONDS_PER_DAY=86400
+
 die() {
   echo "archivist: $1" >&2
   exit "${2:-1}"
@@ -74,10 +80,58 @@ locate_directories() {
   echo "transcripts: $(transcripts_directory)"
 }
 
+# Print what the user said inside the window, one utterance per line,
+# oldest first. The window is the last N days, or everything since a
+# date or a timestamp.
+gather_signals() {
+  window_days=$DEFAULT_WINDOW_DAYS
+  window_start=''
+  while [ $# -gt 0 ]; do
+    case $1 in
+      --days|--since)
+        [ $# -ge 2 ] || die 'usage: archivist signals [--days N | --since YYYY-MM-DD]' 2
+        if [ "$1" = --days ]; then window_days=$2; else window_start=$2; fi
+        shift 2 ;;
+      *) die 'usage: archivist signals [--days N | --since YYYY-MM-DD]' 2 ;;
+    esac
+  done
+
+  if [ -n "$window_start" ]; then
+    case $window_start in
+      [0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]) window_start="${window_start}T00:00:00Z" ;;
+    esac
+    jq -n -e --arg start "$window_start" '$start | try fromdate catch false' >/dev/null 2>&1 \
+      || die "The start of the window must be a date or a timestamp; given was '$window_start'." 2
+    window_days=$(jq -n -r --arg start "$window_start" --arg seconds_per_day "$SECONDS_PER_DAY" \
+      '((now - ($start | fromdate)) / ($seconds_per_day | tonumber) | ceil)
+       | if . < 1 then 1 else . end')
+  else
+    case $window_days in
+      ''|*[!0-9]*) die "The window must be a whole number of days; given was '$window_days'." 2 ;;
+    esac
+    [ "$window_days" -ge 1 ] || die "The window must be at least one day; given was '$window_days'." 2
+    window_start=$(jq -n -r --arg days "$window_days" --arg seconds_per_day "$SECONDS_PER_DAY" \
+      '(now - ($days | tonumber) * ($seconds_per_day | tonumber)) | todate')
+  fi
+
+  transcripts=$(transcripts_directory)
+  [ -d "$transcripts" ] || die "No transcripts directory exists at $transcripts." 2
+  set -- "$transcripts"/*/*.jsonl
+  [ -f "$1" ] || die "No transcript sits under $transcripts." 2
+
+  # Transcripts sit one directory deep, one file per session. find
+  # rounds the age of a file up to whole days, so the file filter gets
+  # a day of slack; the timestamp filter inside jq is the exact one.
+  slack_days=1
+  find "$@" -prune -mtime "-$((window_days + slack_days))" \
+    -exec jq -R -r --arg since "$window_start" -f "$PROGRAMS/signals.jq" {} + | sort
+}
+
 command_name=${1:-}
 [ -n "$command_name" ] || die 'usage: archivist <locate|signals|check> [args]' 2
 shift
 case $command_name in
   locate) locate_directories "$@" ;;
+  signals) gather_signals "$@" ;;
   *) die "There is no command named '$command_name'." 2 ;;
 esac
