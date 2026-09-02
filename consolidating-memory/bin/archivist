@@ -1,0 +1,83 @@
+#!/bin/sh
+# archivist — deterministic reads over Claude Code's auto-memory and its
+# session transcripts. Invoke as: sh <skill-root>/bin/archivist <command>
+#
+#   locate                            print the two directories in use
+#   signals [--days N | --since DATE] print what the user said, one line each
+#   check                             check the memory against its grammar
+#
+# The memory directory comes from autoMemoryDirectory in the user
+# settings of Claude Code, and the transcripts live under projects/ in
+# the same configuration directory. Two environment variables override
+# that lookup, for tests and for a machine with another layout:
+# ARCHIVIST_MEMORY_DIRECTORY and ARCHIVIST_TRANSCRIPTS_DIRECTORY.
+#
+# This is POSIX sh. It needs jq.
+
+set -eu
+
+die() {
+  echo "archivist: $1" >&2
+  exit "${2:-1}"
+}
+
+configuration_directory() {
+  printf '%s' "${CLAUDE_CONFIG_DIR:-$HOME/.claude}"
+}
+
+# A person writes a setting the way a person writes a path, so it can
+# arrive with a leading tilde that no shell has expanded. The tilde sits
+# in a variable, so that it reads as the character and not as a failed
+# expansion of this script's own.
+expand_tilde() {
+  tilde='~'
+  case $1 in
+    "$tilde") printf '%s' "$HOME" ;;
+    "$tilde"/*) printf '%s/%s' "$HOME" "${1#"$tilde"/}" ;;
+    *) printf '%s' "$1" ;;
+  esac
+}
+
+memory_directory() {
+  if [ -n "${ARCHIVIST_MEMORY_DIRECTORY:-}" ]; then
+    expand_tilde "$ARCHIVIST_MEMORY_DIRECTORY"
+    return
+  fi
+
+  settings=$(configuration_directory)/settings.json
+  configured_memory=''
+  if [ -r "$settings" ]; then
+    configured_memory=$(jq -r '.autoMemoryDirectory // empty' "$settings" 2>/dev/null || true)
+  fi
+  if [ -n "$configured_memory" ]; then
+    expand_tilde "$configured_memory"
+    return
+  fi
+
+  # The default of Claude Code: one memory directory per project, named
+  # after the working directory with every other character turned into
+  # a dash.
+  project_name=$(printf '%s' "$PWD" | sed 's/[^A-Za-z0-9]/-/g')
+  printf '%s/projects/%s/memory' "$(configuration_directory)" "$project_name"
+}
+
+transcripts_directory() {
+  if [ -n "${ARCHIVIST_TRANSCRIPTS_DIRECTORY:-}" ]; then
+    expand_tilde "$ARCHIVIST_TRANSCRIPTS_DIRECTORY"
+    return
+  fi
+  printf '%s/projects' "$(configuration_directory)"
+}
+
+locate_directories() {
+  echo "memory: $(memory_directory)"
+  echo "transcripts: $(transcripts_directory)"
+}
+
+command_name=${1:-}
+[ -n "$command_name" ] || die 'usage: archivist <locate|signals|check> [args]' 2
+shift
+case $command_name in
+  locate) locate_directories "$@" ;;
+  *) die "There is no command named '$command_name'." 2 ;;
+esac
