@@ -1,0 +1,4 @@
+- [Jordan's editor preferences](jordan-editor-preferences.md) — two-space indentation, prettier before each commit
+- [Jordan approves plans before execution](jordan-approves-plans-before-execution.md) — a correction is direction, not a go-ahead
+- [Widget API migration](widget-api-migration.md) — moved to api.newplatform.io/v2 on 2030-01-12; SQLite for local development
+- [Neverthrow documentation](neverthrow-documentation.md) — the Result-type library the team uses instead of try/catch
