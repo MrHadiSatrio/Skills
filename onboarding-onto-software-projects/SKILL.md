@@ -220,7 +220,7 @@ Include every section that applies to the project:
 
 ## Key Architectural Decisions
 
-<Non-obvious design choices a newcomer would stumble on. Include the "why" where known.>
+<Non-obvious design choices a newcomer would stumble on, each as it stands now and the constraint it puts on new code. Name the ADR that records a choice, where one exists; the ADR carries the "why", so do not restate it here.>
 
 ## Known Gotchas
 
