@@ -62,6 +62,8 @@ This strategy requires documentation to be present and meaningful. Read the spec
 - **The user asks about implementation** — "how does this work" requires the body by definition.
 - **Side effects or failure modes are undocumented** — if you need to know error behavior and the docs don't describe it.
 
+Documentation says what a unit does, not how or why. A missing mechanism is the convention, not a gap: read the body for it, and do not add it to the documentation.
+
 If early exploration reveals consistently sparse documentation, warn the user, then suggest switching to `exploring-well-tested-code` when the test suite has well-named tests (test names are the specification when doc comments are not), or to normal exploration otherwise.
 
 ## 4. What NOT to Do
