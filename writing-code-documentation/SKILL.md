@@ -5,7 +5,7 @@ description: Conventions on writing code documentation for public APIs. Always u
 
 # Code Documentation
 
-Every public API gets documented in the language's mandated documentation format. Documentation describes the service a unit of code provides to its callers — not how it works internally.
+Every public API gets documented in the language's mandated documentation format. Documentation is a narrative of the unit it sits on, as that unit stands at the instant the documentation is written. It says mostly *what* the unit gives its callers, a little *how* only where a caller can observe it, and never *why*.
 
 **Precedence:** These conventions apply in full to new code and to user-approved migrations toward them. Where the existing codebase demonstrably follows different conventions, match those for changes within existing structures and surface the tension to the user — never mass-refactor toward these conventions uninvited. Identical copies of this rule live in each convention skill; if they diverge, the copy in `writing-organism-oriented-code` wins.
 
@@ -34,7 +34,61 @@ A short code example showing how to obtain the service described. Skip if usage 
 - Omit a tag entirely when the signature already says it all — a `@param moment the moment` line is noise, not documentation.
 - Prefer annotations that document behaviour over metadata annotations: `@since` is rarely useful (callers shouldn't need to know when something was added) and `@author` is noise in a version-controlled codebase — skip both unless the project explicitly requires them.
 
-## 2. Register
+## 2. Narrative at One Instant
+
+A documentation block describes the unit as it is now, to a reader who knows nothing of its past, its plans, or the debates that shaped it. Every sentence must be true of the code beneath it, read on its own.
+
+- **Mostly what.** Name the service, the outcomes, and the contract.
+- **Little how.** Name a mechanism only when the caller observes it or must act on it: "A write is atomic", "Thread-safe". Leave out file layouts, lock choices, temporary files, retry loops, streaming, and internal state — the body says those.
+- **Never why.** No reason, rationale, or justification of the design. A reason a code reader needs goes into an inline comment at the exact line (see Inline Comments). The reason for an architectural choice goes into an ADR, when the project keeps them. Every other "why" falls.
+- **No history.** No "legacy", "previously", "no longer", "written before…", "carried forward from…", and no "now" set against a past. The unit has no past in its own documentation. State the present fact the history left behind: "Undated moments form one group", not "Moments written before dating was added land in one group".
+- **No future.** No "a later change will…", "deferred until…", "for now", and no `TODO` or `FIXME` in a documentation block. An open defect or a plan goes to the issue tracker, or at most to one inline `// FIXME:` line at the code it concerns.
+- **No defense.** No "by design", "not a gap", "intentionally", "only a thin wrapper", "this still works". A sentence that answers an imagined objection is a "why".
+- **No test motivation.** "Injectable, so that a test can drive it" is a "why". A test seam needs no documentation.
+- **A change does not append to the story.** When you change a unit, do not add a sentence about the change to its block. Rewrite a sentence only when the change made it false; otherwise leave the block alone.
+
+**Red-flag words.** In a documentation block, these words usually open a "why", a history, or a plan: *because, since, so that, in order to, thus, as a result, by design, intentionally, legacy, previously, no longer, before, later, will, deferred, for now, currently, TODO, FIXME*. When one appears, apply the rules above to its sentence. Keep the sentence only when it still states a present fact the caller observes — "Returns `null` before [start] is called" stays.
+
+Bad (every sentence after the first breaks a rule):
+
+```kotlin
+/**
+ * A [Moments] that persists each moment as a file under [directory].
+ *
+ * The class writes each moment to a sibling `.tmp` file, then moves it onto
+ * its final name, because a crash mid-write must never leave a partial file.
+ * Files written before moments were grouped by day surface under the undated
+ * group. A later change will migrate them. The removal of stale `.tmp` files
+ * runs inside [all], by design, not as a gap. The sync worker in the cloud
+ * module reads these files on its next pass.
+ *
+ * @param clock The clock. `now()` produces the millis in each file name.
+ */
+```
+
+The mechanism (`.tmp` file, move), the reason (`because…`), the history (`written before…`), the plan (`A later change…`), the defense (`by design, not as a gap`), the neighbor (`The sync worker…`), and the internals in the `@param` line all fall.
+
+Good:
+
+```kotlin
+/**
+ * A [Moments] that keeps each moment as a file under [directory].
+ *
+ * A write is atomic: [all] returns whole moments only. Undated moments
+ * form one group.
+ *
+ * @param clock The source of each moment's timestamp.
+ */
+```
+
+The one reason a code reader needs sits at its line:
+
+```kotlin
+// A crash before this move leaves only the .tmp file, never a partial moment.
+temporary.moveTo(target)
+```
+
+## 3. Register
 
 Documentation is two or three very short sentences that carry only the essence. A reader understands each sentence on the first pass, without holding an earlier clause in mind.
 
@@ -64,11 +118,11 @@ Good:
  */
 ```
 
-## 3. Scope of a Brief
+## 4. Scope of a Brief
 
 A brief describes the unit it sits on, and nothing beyond it.
 
-- **The brief states the "what" alone.** Every "why" moves inline, as a comment at the exact code it explains (see Inline Comments), or falls to the deletion test.
+- **The whole block states the "what" alone.** Every "why" moves inline, as a comment at the exact code it explains (see Inline Comments), or falls to the deletion test (see Narrative at One Instant).
 - **A type documents its own responsibility, never a collaborator's mechanism.** `"Ended if and only if [PersistedSession] reads it as ended"` names the contract and stops. How `PersistedSession` reaches that verdict is `PersistedSession`'s brief.
 - **No references to far-away components.** A brief must not describe the behavior of another module's serializer or the platform's handler chain — such references drift as those components change. Exception: a `@see` tag that points at the component without describing it.
 - **No usage-context narrative.** Where a type is created, who typically calls it, and what the caller does next belong to the caller's code, not the type's brief. The usage snippet segment shows *how to obtain* the service — it does not narrate a scenario.
@@ -93,7 +147,7 @@ Good:
  */
 ```
 
-## 4. Inline Comments
+## 5. Inline Comments
 
 An inline comment carries a "why" that the code cannot. The "what" and the "how" are the code's own job — rename until the code says them itself (`writing-prose-like-code` owns that rule; if these diverge, its "What NOT to Do" wins).
 
@@ -115,7 +169,7 @@ Good:
 val timeout = 30.seconds
 ```
 
-## 5. Examples
+## 6. Examples
 
 ### Types
 
@@ -166,7 +220,7 @@ Bad:
 fun save(moment: Moment): Moment
 ```
 
-## 6. Language Format Reference
+## 7. Language Format Reference
 
 | Language        | Format             | Common annotation tags                                          |
 |-----------------|--------------------|-----------------------------------------------------------------|
@@ -178,12 +232,16 @@ fun save(moment: Moment): Moment
 | Swift           | `///`              | `- Parameter`, `- Returns`, `- Throws`, `- Note`, `- Warning`   |
 | Go              | `//`               | Inline prose, `Deprecated:` prefix                              |
 
-## 7. What NOT to Do
+## 8. What NOT to Do
 
 - Don't restate the declared name — "This class is a...", "This method does...", "A CompletionEvent that..."
 - Don't use filler phrases — "This is used to...", "A helper that...", "Responsible for..."
 - Don't document private/internal APIs unless their complexity warrants it
 - Don't write implementation details (how) — write caller-facing contracts (what)
+- Don't explain why — no reason, rationale, or defense in a documentation block. A reason the code reader needs goes inline at its line (see Narrative at One Instant)
+- Don't narrate history or plans — no "legacy", "previously", "later", "deferred", `TODO`, or `FIXME` in a documentation block
+- Don't append a sentence about your change to an existing block — rewrite only a sentence that the change made false
+- Don't document why a seam exists for tests
 - Don't force optional segments — skip nuance if the brief is enough, skip usage if trivial
 - Don't write multi-paragraph annotation tags — one line each
 - Don't use `@author` (redundant with version control) or `@since` (callers shouldn't need release history) unless the project explicitly mandates them
