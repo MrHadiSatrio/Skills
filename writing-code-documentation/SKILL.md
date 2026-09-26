@@ -11,7 +11,7 @@ Every public API gets documented in the language's mandated documentation format
 
 ## 1. Documentation Segments
 
-Documentation consists of up to four ordered segments.
+Documentation consists of up to four ordered segments. Most blocks need only the brief and the tags.
 
 ### Service Brief (required)
 
@@ -19,13 +19,15 @@ What service the code provides to callers. Max two lines. Written from the calle
 
 For **types** (classes, interfaces, objects), open with an identity phrase — a noun describing what the type *is*: `"An [Event] signalling..."`, `"A repository for..."`. When the type implements or extends a named super, the identity phrase names that super: `"An [Activity] that..."`, `"A [BroadcastReceiver] for..."`. When the identity phrase alone says enough, the brief ends there — do not force a second sentence. For **callables** (functions, methods), open with a verb describing what the caller *gets*: `"Persists a..."`, `"Returns the..."`.
 
-### Nuance Extension (optional)
+### Nuance Extension (optional, rare)
 
-Additional context a caller needs: edge cases, threading guarantees, preconditions, error behavior, performance characteristics. Skip entirely if the brief says it all.
+One to three short sentences on an outcome the caller observes and the signature cannot show: an error outcome, a threading guarantee, a precondition, a lifecycle rule such as `"Call [close] when done."` Skip it when the brief says it all — the common case.
+
+A type's documentation is usually the identity phrase, a lifecycle line where the type has one, and the `@param` list. Nothing else. The nuance extension is never a home for mechanisms, reasons, or history (see Narrative at One Instant).
 
 ### Usage Snippet (optional, class-level only)
 
-A short code example showing how to obtain the service described. Skip if usage is trivial or inferrable from the constructor/method signatures.
+A short code example showing how to obtain the service described. Skip if usage is trivial or inferrable from the constructor/method signatures. The snippet is code alone — no prose scenario around it.
 
 ### Annotation Tags (use where they add caller-facing information)
 
@@ -91,6 +93,8 @@ temporary.moveTo(target)
 ## 3. Register
 
 Documentation is two or three very short sentences that carry only the essence. A reader understands each sentence on the first pass, without holding an earlier clause in mind.
+
+- **Length.** The brief is at most two lines. The prose after it is at most three short sentences. A block that needs more is describing mechanisms, reasons, or neighbors — cut it back to the contract. Exception: a usage snippet can run longer, because it is code.
 
 - **The deletion test.** For every sentence and paragraph, delete it. If callers lose no important understanding, it was filler — leave it out. Apply the test to the brief, the nuance extension, and every tag line.
 - **One fact per sentence.** Split a sentence that carries a condition, an example, and a consequence into separate sentences, or drop the parts that fail the deletion test.
@@ -197,11 +201,10 @@ Good:
 
 ```kotlin
 /**
- * Persists a [Moment] to the local filesystem, creating the backing
- * file if it doesn't exist.
+ * Persists a [Moment] to the local filesystem.
  *
- * Writes are atomic — a partial failure won't corrupt existing data.
- * Thread-safe; concurrent writes to the same [Moment] are serialized.
+ * A write is atomic: a failure leaves the earlier data intact.
+ * Concurrent writes to one [Moment] are serialized.
  *
  * @return The persisted Moment with its updated timestamp.
  */
@@ -237,7 +240,7 @@ fun save(moment: Moment): Moment
 - Don't restate the declared name — "This class is a...", "This method does...", "A CompletionEvent that..."
 - Don't use filler phrases — "This is used to...", "A helper that...", "Responsible for..."
 - Don't document private/internal APIs unless their complexity warrants it
-- Don't write implementation details (how) — write caller-facing contracts (what)
+- Don't write implementation details (how) — write caller-facing contracts (what). Exception: a mechanism the caller observes, such as atomicity or thread safety
 - Don't explain why — no reason, rationale, or defense in a documentation block. A reason the code reader needs goes inline at its line (see Narrative at One Instant)
 - Don't narrate history or plans — no "legacy", "previously", "later", "deferred", `TODO`, or `FIXME` in a documentation block
 - Don't append a sentence about your change to an existing block — rewrite only a sentence that the change made false
