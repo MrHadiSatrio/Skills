@@ -34,6 +34,8 @@ A short code example showing how to obtain the service described. Skip if usage 
 - Use the language's annotation tags — `@param`, `@return`/`@returns`, `@throws`/`@exception`, `@deprecated`, `@see`, and so on — for every piece of caller-facing information not already clear from the signature.
 - One line per tag — never multi-paragraph.
 - Omit a tag entirely when the signature already says it all — a `@param moment the moment` line is noise, not documentation.
+- A `@param` line says what the argument is to the caller, not what the unit does with it inside: `@param clock The source of each moment's timestamp.`, not `@param clock The clock. now() produces the millis in each file name.`
+- A `@deprecated` tag names the replacement, in the present tense — not when or why the API was deprecated.
 - Prefer annotations that document behaviour over metadata annotations: `@since` is rarely useful (callers shouldn't need to know when something was added) and `@author` is noise in a version-controlled codebase — skip both unless the project explicitly requires them.
 
 ## 2. Narrative at One Instant
